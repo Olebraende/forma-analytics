@@ -38,7 +38,15 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static first paint: shown instantly, replaced when the app mounts. -->
+      <div class="boot" role="status">
+        <svg width="40" height="40" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor" /><path d="M9 23V9h14v3.2H12.4v3.1h8.3v3.1h-8.3V23z" fill="#fff" /></svg>
+        <p class="boot-title">Forma Analytics</p>
+        <p class="boot-text">Loading your dashboard</p>
+        <noscript><p class="boot-text">This app needs JavaScript to run. Your data never leaves your browser.</p></noscript>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

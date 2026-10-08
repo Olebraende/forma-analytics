@@ -186,3 +186,25 @@ html[data-motion='reduce'] *::after {
   animation-iteration-count: 1 !important;
   transition-duration: 1ms !important;
 }
+
+/* Static boot shell from index.html (visible until React mounts). */
+.boot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 100dvh;
+  color: var(--accent);
+  text-align: center;
+}
+.boot-title {
+  color: var(--text);
+  font-size: var(--text-heading);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.boot-text {
+  color: var(--text-muted);
+  font-size: var(--text-label);
+}

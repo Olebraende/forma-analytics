@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { LazyMotion } from 'motion/react'
+import { ErrorBoundary } from './ErrorBoundary'
 import { PrefsProvider } from './prefs'
 import { FinanceProvider } from '@/finance/store'
 import { ToastProvider } from '@/components/ui/Toast'
@@ -46,11 +47,13 @@ export function AppRoutes() {
 
 export function App() {
   return (
-    <AppProviders>
-      {/* Hash routing keeps deep links and refresh working on static hosting. */}
-      <HashRouter>
-        <AppRoutes />
-      </HashRouter>
-    </AppProviders>
+    <ErrorBoundary>
+      <AppProviders>
+        {/* Hash routing keeps deep links and refresh working on static hosting. */}
+        <HashRouter>
+          <AppRoutes />
+        </HashRouter>
+      </AppProviders>
+    </ErrorBoundary>
   )
 }
