@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 export function useElementWidth<T extends HTMLElement>(fallback = 640) {
   const ref = useRef<T>(null)
   const [width, setWidth] = useState(fallback)
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
     setWidth(el.clientWidth || fallback)

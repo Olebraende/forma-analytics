@@ -1,0 +1,122 @@
+# Forma Analytics
+
+A private, local-first personal finance dashboard: transactions, budgets, savings goals and interactive analytics. It runs entirely in your browser. There is no backend, no account and no tracking.
+
+**Live site:** https://olebraende.github.io/forma-analytics/
+
+Forma Analytics is an independently branded educational and portfolio project, not an operational commercial service.
+
+![Overview in the light theme](docs/screenshots/overview-light.png)
+
+| Dark | Halloween | Christmas | Mobile (Summer) |
+| --- | --- | --- | --- |
+| ![Dark](docs/screenshots/overview-dark.png) | ![Halloween](docs/screenshots/analytics-halloween.png) | ![Christmas](docs/screenshots/budgets-christmas.png) | ![Mobile](docs/screenshots/overview-mobile.png) |
+
+## Features
+
+- **Overview:** income, expenses, net cash flow, budget remaining and savings progress, with period selection, comparison against the previous period, trend and category charts, generated insights and recent transactions.
+- **Transactions:** add, edit and delete income and expenses with validation and confirmations. Search, filter by type, category and date range, sort, and paginate.
+- **Budgets:** monthly category limits, remaining amounts, utilisation, overspend and near-limit indicators, a month switcher and a budget-versus-actual chart.
+- **Savings goals:** targets, saved amounts, optional dates with a required-per-month estimate, completion state and a progress chart.
+- **Analytics:** income versus expenses, spending trend, cumulative savings, category breakdown, budget versus actual, goal progress and year-over-year comparison, filterable by date range and category. Every chart has a text summary and a data table.
+- **Settings:** theme, seasonal automation, motion preference, currency, locale, JSON backup and import, CSV export, demo data management and data deletion.
+- **Demo mode:** realistic fictional data on first launch, clearly labelled and separate from your own records. Removing or resetting it never touches your data.
+
+## Themes
+
+Light (default), Dark, Summer, Christmas, Halloween and April Fools. All are semantic CSS-token themes that share tokens with the charts.
+
+- **Automatic** follows your system light/dark setting and, if enabled, switches to a seasonal theme on its dates: Summer 1 Jun to 31 Aug, Halloween 24 to 31 Oct, Christmas 1 to 26 Dec and April Fools on 1 Apr. A manually chosen theme always wins.
+- The theme is applied by a small inline script before first paint, so there is no flash of the wrong theme.
+- April Fools only changes colours and playful copy. It never alters financial values.
+
+## Tech stack
+
+React 19, TypeScript (strict), Vite, React Router (hash routing for static hosting), CSS Modules and CSS custom properties, Lucide React, Motion for React (lazy-loaded), IndexedDB, Vitest, React Testing Library, Playwright with axe-core, ESLint and GitHub Actions. Font: Inter Variable, self-hosted as a Latin-subset WOFF2.
+
+There are no backend, analytics or third-party runtime services, and no state-management library.
+
+## Getting started
+
+Requires Node.js 22 or newer.
+
+```bash
+npm install
+npm run dev          # local development at http://localhost:5173/forma-analytics/
+npm run build        # type-check and production build into dist/
+npm run preview      # serve the production build
+```
+
+## Testing
+
+```bash
+npm run typecheck
+npm run lint
+npm test             # Vitest unit and component tests
+npx playwright install chromium
+npm run test:e2e     # Playwright on desktop and mobile viewports, including axe checks
+```
+
+The Playwright suite checks every route for console errors and horizontal overflow, runs axe (WCAG 2.2 AA rules) on every route in all six themes, exercises the add/reload persistence flow, theme switching, the mobile drawer, import/export, reduced motion and that no request leaves the origin.
+
+## Architecture
+
+```
+src/
+  app/        providers: preferences/theme, routing, lazy motion
+  charts/     typed chart components (SVG), see docs/CHARTING.md
+  components/ design-system primitives and shared UI
+  data/       categories and demo data generator
+  features/   feature-specific forms
+  finance/    pure calculations, validation, and the data store
+  layouts/    shell, sidebar, mobile drawer, theme menu
+  routes/     one lazy-loaded page per section
+  storage/    IndexedDB, preferences, import/export
+  styles/     design tokens and global CSS
+  themes/     theme definitions and CSS tokens
+  utils/      money and date helpers
+```
+
+Presentation, state, persistence, calculations, charts and theming are kept in separate layers. Financial calculations are pure functions that do not depend on React or the chart layer.
+
+## Local data and privacy
+
+- Records are stored in **IndexedDB** (`forma-analytics`, schema version 1) with versioned migrations. Lightweight preferences use `localStorage`.
+- Money is stored as **integer minor units** (for example øre) and parsed from text without floating-point arithmetic.
+- **Nothing is sent anywhere.** The app makes no analytics or tracking requests; the e2e suite asserts that no request leaves the origin.
+- IndexedDB is **not encrypted**. Anyone with access to your browser profile can read the data, so avoid using the app on shared or untrusted devices.
+- Clearing site data, private browsing or switching browsers removes or hides your records. Use **Settings > Download backup** regularly.
+- Imports are validated record by record, size-limited, de-duplicated against existing data, previewed before applying, and rendered as text only. CSV export neutralises spreadsheet formula injection.
+- Exports carry the app name and schema version.
+
+## Accessibility
+
+The target is WCAG 2.2 AA. This includes semantic landmarks and headings, a skip link, keyboard-operable controls with visible focus, native `<dialog>` modals with focus management, labelled form fields with associated error messages, live-region announcements, `prefers-reduced-motion` support plus an in-app setting, and charts that never rely on colour alone (marker shapes, dash styles, fill patterns, direct values, keyboard-readable tooltips and data tables). Automated axe checks pass on all routes in all themes. Automated checks do not replace testing with real assistive technology, which has not been done yet.
+
+## Performance and Lighthouse
+
+Measured with Lighthouse against the production build served by `vite preview` on a local machine (Chrome, default Lighthouse throttling; mobile uses simulated slow 4G and 4x CPU slowdown). Run on 8 Oct 2026 with `npm run lighthouse`; raw results are in `reports/lighthouse.json`.
+
+| Route | Form factor | Performance | Accessibility | Best Practices | SEO | LCP | CLS |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| All six routes | Desktop | 100 | 100 | 100 | 100 | 0.5 to 0.6 s | 0 |
+| Overview | Mobile | 96 | 100 | 100 | 100 | 2.4 s | 0 |
+| Transactions, Budgets, Goals, Analytics, Settings | Mobile | 94 to 95 | 100 | 100 | 100 | 2.6 to 2.7 s | 0 |
+
+**Not 100 on mobile performance.** LCP under simulated slow 4G is limited by downloading and running the main bundle (about 91 KB gzipped, mostly React, React DOM and React Router) and then the lazy route chunk. Preloading the landing route's chunks helped the Overview. Further gains would likely require a smaller router or React alternative. Scores from a local server do not include real-network or CDN behaviour, so measure the deployed site too.
+
+## Deployment
+
+GitHub Actions (`.github/workflows/ci.yml`) type-checks, lints, runs unit and e2e tests, then builds and deploys `dist/` to GitHub Pages from `main` only after those checks pass. The Vite `base` is `/forma-analytics/` and the app uses hash routing, so refresh and direct links work on static hosting. Dependabot keeps npm packages and Actions up to date.
+
+## Browser support
+
+Current versions of Chrome, Edge, Firefox and Safari. The app relies on IndexedDB, native `<dialog>`, CSS `color-mix()`, container queries and `:has()`.
+
+## Charting and licences
+
+Charts are rendered by in-house SVG components instead of Highcharts because permission for a public portfolio deployment could not be confirmed. See [docs/CHARTING.md](docs/CHARTING.md).
+
+Original project code is licensed under the [MIT License](LICENSE). It does not override the licences of third-party dependencies or assets, for example Inter (SIL Open Font License 1.1, see `public/fonts/Inter-OFL.txt`), React, Lucide and Motion, which keep their own licences.
+
+Copyright (c) 2026 Ole Mathias Hammer Brænde

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { m } from 'motion/react'
 import { Menu as MenuIcon, Plus, ShieldCheck, TriangleAlert } from 'lucide-react'
+import { PageSkeleton } from './PageSkeleton'
 import { Sidebar } from './Sidebar'
 import { MobileNav } from './MobileNav'
 import { ThemeMenu } from './ThemeMenu'
@@ -68,26 +69,32 @@ export function AppLayout() {
           </div>
         </header>
         <main id="main" ref={mainRef} tabIndex={-1} className={styles.main}>
-          {status === 'error' && (
-            <div role="alert" className={styles.banner} data-tone="negative">
-              <TriangleAlert size={18} strokeWidth={1.75} aria-hidden="true" />
-              <p>{error}</p>
-              <Button size="sm" onClick={retry}>
-                Try again
-              </Button>
-            </div>
+          {status === 'loading' ? (
+            <PageSkeleton />
+          ) : (
+            <>
+              {status === 'error' && (
+                <div role="alert" className={styles.banner} data-tone="negative">
+                  <TriangleAlert size={18} strokeWidth={1.75} aria-hidden="true" />
+                  <p>{error}</p>
+                  <Button size="sm" onClick={retry}>
+                    Try again
+                  </Button>
+                </div>
+              )}
+              {status === 'ready' && hasDemo && (
+                <div className={styles.banner}>
+                  <ShieldCheck size={18} strokeWidth={1.75} aria-hidden="true" />
+                  <p>
+                    You are exploring fictional demo data. Add your own transactions any time, or manage it in <Link to="/settings">Settings</Link>.
+                  </p>
+                </div>
+              )}
+              <m.div key={pathname} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}>
+                <Outlet />
+              </m.div>
+            </>
           )}
-          {status === 'ready' && hasDemo && (
-            <div className={styles.banner}>
-              <ShieldCheck size={18} strokeWidth={1.75} aria-hidden="true" />
-              <p>
-                You are exploring fictional demo data. Add your own transactions any time, or manage it in <Link to="/settings">Settings</Link>.
-              </p>
-            </div>
-          )}
-          <m.div key={pathname} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}>
-            <Outlet />
-          </m.div>
         </main>
       </div>
     </div>
