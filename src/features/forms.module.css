@@ -1,0 +1,24 @@
+.form {
+  display: grid;
+  gap: var(--space-4);
+}
+.group {
+  display: grid;
+  gap: var(--space-2);
+}
+.groupLabel {
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+.saveError {
+  padding: var(--space-3);
+  background: var(--negative-soft);
+  color: var(--negative);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-label);
+}
+.row2 {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}

@@ -1,0 +1,22 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+.title {
+  font-size: var(--text-title);
+  letter-spacing: -0.025em;
+}
+.description {
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+  max-width: 40rem;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

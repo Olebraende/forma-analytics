@@ -1,0 +1,72 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.label {
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.icon {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.value {
+  font-size: var(--text-kpi);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  /* Reserve width to avoid layout shifts while counting. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 1.5rem;
+  font-size: var(--text-caption);
+}
+.delta,
+.deltaNeutral {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px var(--space-2) 1px var(--space-1);
+  border-radius: var(--radius-pill);
+  font-weight: 650;
+}
+.deltaNeutral {
+  padding-left: var(--space-2);
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+.delta[data-tone='good'] {
+  background: var(--positive-soft);
+  color: var(--positive);
+}
+.delta[data-tone='bad'] {
+  background: var(--negative-soft);
+  color: var(--negative);
+}
+.delta[data-tone='neutral'] {
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+.footnote {
+  color: var(--text-muted);
+}
