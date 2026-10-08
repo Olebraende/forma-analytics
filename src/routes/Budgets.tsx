@@ -58,7 +58,7 @@ export default function Budgets() {
 
       {statuses.length === 0 ? (
         <Card>
-          <EmptyState icon={<PiggyBank size={28} strokeWidth={1.5} />} title="No budgets yet" action={<Button variant="primary" onClick={() => setEditing('new')}>Create a budget</Button>}>
+          <EmptyState icon={<PiggyBank size={28} strokeWidth={1.5} />} title="No budgets yet" level={2} action={<Button variant="primary" onClick={() => setEditing('new')}>Create a budget</Button>}>
             Set a monthly limit for a category to track how much is left.
           </EmptyState>
         </Card>

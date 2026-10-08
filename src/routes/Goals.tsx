@@ -41,7 +41,7 @@ export default function Goals() {
       />
       {progress.length === 0 ? (
         <Card>
-          <EmptyState icon={<Target size={28} strokeWidth={1.5} />} title="No savings goals yet" action={<Button variant="primary" onClick={() => setEditing('new')}>Create a goal</Button>}>
+          <EmptyState icon={<Target size={28} strokeWidth={1.5} />} title="No savings goals yet" level={2} action={<Button variant="primary" onClick={() => setEditing('new')}>Create a goal</Button>}>
             Name something you are saving for, set a target, and watch the progress grow.
           </EmptyState>
         </Card>

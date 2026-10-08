@@ -61,7 +61,7 @@ export default function Overview() {
         <Card>
           <EmptyState
             icon={<Wallet size={28} strokeWidth={1.5} />}
-            title="Nothing to show yet"
+            title="Nothing to show yet" level={2}
             action={
               <div className={styles.row}>
                 <Link to="/transactions?new=1">

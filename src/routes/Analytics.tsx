@@ -65,7 +65,7 @@ export default function Analytics() {
     return (
       <>
         <PageHeader title="Analytics" />
-        <Card><EmptyState icon={<ChartNoAxesCombined size={28} strokeWidth={1.5} />} title="No data to analyse">Add transactions or load demo data in Settings to see charts.</EmptyState></Card>
+        <Card><EmptyState icon={<ChartNoAxesCombined size={28} strokeWidth={1.5} />} title="No data to analyse" level={2}>Add transactions or load demo data in Settings to see charts.</EmptyState></Card>
       </>
     )
 

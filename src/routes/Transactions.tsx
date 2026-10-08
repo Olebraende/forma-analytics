@@ -116,7 +116,7 @@ export default function Transactions() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={<ReceiptText size={28} strokeWidth={1.5} />}
-            title={filtersActive ? 'No matching transactions' : 'No transactions yet'}
+            title={filtersActive ? 'No matching transactions' : 'No transactions yet'} level={2}
             action={
               filtersActive ? (
                 <Button

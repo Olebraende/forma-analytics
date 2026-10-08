@@ -54,13 +54,14 @@ export function Skeleton({ height = '1rem', width = '100%', radius }: { height?:
 }
 
 /* ---------- Empty state ---------- */
-export function EmptyState({ icon, title, children, action }: { icon: ReactNode; title: string; children?: ReactNode; action?: ReactNode }) {
+export function EmptyState({ icon, title, children, action, level = 3 }: { icon: ReactNode; title: string; children?: ReactNode; action?: ReactNode; /** 2 when it sits directly under the page title, 3 inside a card with its own heading. */ level?: 2 | 3 }) {
+  const H = level === 2 ? 'h2' : 'h3'
   return (
     <div className={styles.empty}>
       <div className={styles.emptyIcon} aria-hidden="true">
         {icon}
       </div>
-      <h3 className={styles.emptyTitle}>{title}</h3>
+      <H className={styles.emptyTitle}>{title}</H>
       {children && <p className={styles.emptyText}>{children}</p>}
       {action}
     </div>
