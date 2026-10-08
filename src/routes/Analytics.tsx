@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { EmptyState, Segmented } from '@/components/ui/Misc'
 import { SelectField } from '@/components/ui/Field'
-import { AreaChart, BarChart, ColumnChart, DonutChart, FinancialTrendChart, LineChart } from '@/charts'
+import { AreaChart, BarChart, ColumnChart, DonutChart, FinancialTrendChart, HeatmapChart, LineChart } from '@/charts'
 import { ChartCard } from '@/charts/ChartCard'
 import { CATEGORIES, getCategory } from '@/data/categories'
 import { budgetStatuses, categoryTotals, goalProgress, monthlySeries, periodRange, summarize } from '@/finance/calc'
@@ -51,6 +51,13 @@ export default function Analytics() {
       goals: fin.goals.map((g) => goalProgress(g, today)),
       year, monthsOf, thisYear: yearSeries(year), lastYear: yearSeries(year - 1),
       total: summarize(inRange),
+      heat: (() => {
+        const top = categoryTotals(inRange).slice(0, 8)
+        const months = series.map((p) => p.month)
+        const points: [number, number, number][] = []
+        top.forEach((c, y) => months.forEach((m, x) => points.push([x, y, inRange.filter((t) => t.type === 'expense' && t.categoryId === c.categoryId && monthKey(t.date) === m).reduce((sum, t) => sum + t.amount, 0)])))
+        return { cats: top.map((c) => getCategory(c.categoryId).name), months, points }
+      })(),
     }
   }, [fin.transactions, fin.budgets, fin.goals, range, category, today, metric])
 
@@ -129,6 +136,14 @@ export default function Analytics() {
           </ChartCard>
         </div>
         <div className={styles.wide} style={{ '--i': 6 } as React.CSSProperties}>
+          <ChartCard title="Spending heatmap" description={`Largest expense categories by month, ${catName}`}
+            table={{ caption: 'Expenses by category and month', columns: ['Category', ...data.heat.months.map((m) => fmt.month(m))], rows: data.heat.cats.map((cat, y) => [cat, ...data.heat.months.map((_, x) => fmt.money(data.heat.points.find((p) => p[0] === x && p[1] === y)?.[2] ?? 0))]) }}>
+            {data.heat.cats.length ? (
+              <HeatmapChart label="Spending by category and month" formatValue={money} formatTick={fmt.compact} xCategories={data.heat.months.map((m) => fmt.month(m))} yCategories={data.heat.cats} points={data.heat.points} summary="Darker cells mean more spending. Every value is also in the data table." />
+            ) : <EmptyState icon={<ChartNoAxesCombined size={24} />} title="No expenses for this selection" />}
+          </ChartCard>
+        </div>
+        <div className={styles.wide} style={{ '--i': 7 } as React.CSSProperties}>
           <ChartCard title="Year over year" description={`${metricLabel} by month, ${data.year} compared with ${data.year - 1}`}
             action={<Segmented name="metric" label="Metric" value={metric} onChange={setMetric} options={[{ id: 'expenses', label: 'Expenses' }, { id: 'income', label: 'Income' }, { id: 'net', label: 'Net' }]} />}
             table={{ caption: `${metricLabel} by month, two years`, columns: ['Month', String(data.year), String(data.year - 1)], rows: monthNames.map((m, i) => [m, fmt.money(data.thisYear[i] ?? 0), fmt.money(data.lastYear[i] ?? 0)]) }}>

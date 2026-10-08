@@ -1,6 +1,6 @@
 .card {
   container-type: inline-size;
-  min-height: 10.5rem;
+  min-height: 12.5rem;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -71,4 +71,16 @@
 }
 .footnote {
   color: var(--text-muted);
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: calc(var(--space-5) + 2.25rem);
+}
+.spark {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2.25rem;
+  pointer-events: none;
 }

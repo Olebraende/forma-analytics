@@ -8,7 +8,7 @@ let loading: Promise<HC> | null = null
 export function loadHighcharts(): Promise<HC> {
   loading ??= (async () => {
     const { default: Highcharts } = await import('highcharts/esm/highcharts.js')
-    await Promise.all([import('highcharts/esm/modules/accessibility.js'), import('highcharts/esm/modules/pattern-fill.js')])
+    await Promise.all([import('highcharts/esm/modules/accessibility.js'), import('highcharts/esm/modules/pattern-fill.js'), import('highcharts/esm/modules/heatmap.js')])
     return Highcharts as unknown as HC
   })().catch((e) => {
     loading = null

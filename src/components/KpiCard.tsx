@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
+import { Sparkline } from '@/charts'
 import { useAnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { useFormat } from '@/app/prefs'
 import styles from './KpiCard.module.css'
@@ -16,9 +17,11 @@ interface Props {
   upIsGood?: boolean
   footnote?: string
   signed?: boolean
+  /** Recent values (oldest first) drawn as a decorative trend line. */
+  trend?: number[]
 }
 
-export function KpiCard({ label, icon, value, change, upIsGood = true, footnote, signed }: Props) {
+export function KpiCard({ label, icon, value, change, upIsGood = true, footnote, signed, trend }: Props) {
   const { money } = useFormat()
   const shown = useAnimatedNumber(value)
   let delta: ReactNode = null
@@ -47,6 +50,11 @@ export function KpiCard({ label, icon, value, change, upIsGood = true, footnote,
         </span>
       </div>
       <p className={`${styles.value} num`}>{money(shown, { signed })}</p>
+      {trend && trend.length > 1 && (
+        <div className={styles.spark}>
+          <Sparkline values={trend} tone={upIsGood ? 'accent' : 'negative'} />
+        </div>
+      )}
       <div className={styles.bottom}>
         {delta}
         {footnote && <span className={styles.footnote}>{footnote}</span>}

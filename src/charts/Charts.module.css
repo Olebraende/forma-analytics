@@ -277,3 +277,8 @@
   color: var(--text-muted);
   font-size: var(--text-label);
 }
+
+.spark {
+  display: block;
+  overflow: visible;
+}

@@ -80,6 +80,9 @@ export default function Overview() {
   const { sum, prev } = view
   const trend = view.series.map((p) => ({ label: fmt.month(p.month), income: p.income, expenses: p.expenses, net: p.net }))
   const peak = [...view.series].sort((a, b) => b.expenses - a.expenses)[0]
+  // The current month is incomplete, so it would falsely look like a collapse in the trend line.
+  const completeMonths = view.series.filter((p) => p.month < monthKey(today))
+  const trendOf = (pick: (p: (typeof view.series)[number]) => number) => (completeMonths.length > 1 ? completeMonths : view.series).map(pick)
   const periodLabel = PERIODS.find((p) => p.id === period)?.label ?? ''
 
   return (
@@ -95,13 +98,13 @@ export default function Overview() {
           Key figures, {periodLabel}
         </h2>
         <div style={{ '--i': 0 } as React.CSSProperties}>
-          <KpiCard label="Total income" icon={<ArrowDownToLine size={16} strokeWidth={1.75} />} value={sum.income} change={changeRatio(sum.income, prev.income)} />
+          <KpiCard label="Total income" trend={trendOf((p) => p.income)} icon={<ArrowDownToLine size={16} strokeWidth={1.75} />} value={sum.income} change={changeRatio(sum.income, prev.income)} />
         </div>
         <div style={{ '--i': 1 } as React.CSSProperties}>
-          <KpiCard label="Total expenses" icon={<ArrowUpFromLine size={16} strokeWidth={1.75} />} value={sum.expenses} change={changeRatio(sum.expenses, prev.expenses)} upIsGood={false} />
+          <KpiCard label="Total expenses" trend={trendOf((p) => p.expenses)} icon={<ArrowUpFromLine size={16} strokeWidth={1.75} />} value={sum.expenses} change={changeRatio(sum.expenses, prev.expenses)} upIsGood={false} />
         </div>
         <div style={{ '--i': 2 } as React.CSSProperties}>
-          <KpiCard label="Net cash flow" icon={<TrendingUp size={16} strokeWidth={1.75} />} value={sum.net} signed change={changeRatio(sum.net, prev.net)} footnote={sum.income > 0 ? `${Math.round(sum.savingsRate * 100)}% of income kept` : undefined} />
+          <KpiCard label="Net cash flow" trend={trendOf((p) => p.net)} icon={<TrendingUp size={16} strokeWidth={1.75} />} value={sum.net} signed change={changeRatio(sum.net, prev.net)} footnote={sum.income > 0 ? `${Math.round(sum.savingsRate * 100)}% of income kept` : undefined} />
         </div>
         <div style={{ '--i': 3 } as React.CSSProperties}>
           <KpiCard label="Budget remaining" icon={<PiggyBank size={16} strokeWidth={1.75} />} value={view.budgetTotal.remaining} signed={view.budgetTotal.remaining < 0} footnote={fin.budgets.length ? `${fmt.month(view.budgetMonth, 'long')}` : 'No budgets set'} />

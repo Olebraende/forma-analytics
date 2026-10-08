@@ -3,7 +3,7 @@ import { usePrefs } from '@/app/prefs'
 import { CartesianChart } from './CartesianChart'
 import { useChartColors } from './chartTheme'
 import { HighchartsChart } from './HighchartsChart'
-import { donutOptions } from './options'
+import { donutOptions, heatmapOptions, type HeatmapProps } from './options'
 import type { BarDatum, CartesianChartProps, ChartSeries, DonutDatum } from './types'
 import { seriesColor } from './types'
 import styles from './Charts.module.css'
@@ -153,6 +153,45 @@ export function DonutChart({
         </ul>
       </div>
     </div>
+  )
+}
+
+export function HeatmapChart(props: HeatmapProps) {
+  const colors = useChartColors()
+  const { reducedMotion } = usePrefs()
+  const options = useMemo(() => heatmapOptions({ ...props, colors, reducedMotion }), [props, colors, reducedMotion])
+  return <HighchartsChart options={options} height={Math.max(240, 56 + props.yCategories.length * 40)} />
+}
+
+/** Tiny dependency-free trend line for KPI cards. Decorative: the figure beside it carries the data. */
+export function Sparkline({ values, tone = 'accent' }: { values: number[]; tone?: 'accent' | 'positive' | 'negative' }) {
+  if (values.length < 2) return null
+  const w = 120
+  const h = 36
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const span = max - min || 1
+  const pts = values.map((v, i) => [(i / (values.length - 1)) * (w - 8), h - 4 - ((v - min) / span) * (h - 12)] as const)
+  const line = pts.reduce((d, [x, y], i, a) => {
+    if (i === 0) return `M${x.toFixed(1)} ${y.toFixed(1)}`
+    const [px, py] = a[i - 1] as readonly [number, number]
+    const cx = (px + x) / 2
+    return `${d} C${cx.toFixed(1)} ${py.toFixed(1)} ${cx.toFixed(1)} ${y.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`
+  }, '')
+  const last = pts.at(-1) as readonly [number, number]
+  const color = tone === 'positive' ? 'var(--positive)' : tone === 'negative' ? 'var(--negative)' : 'var(--accent)'
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} preserveAspectRatio="none" aria-hidden="true" className={styles.spark} style={{ color }}>
+      <defs>
+        <linearGradient id={`sp-${tone}`} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="currentColor" stopOpacity="0.28" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={`${line} L${last[0]} ${h} L0 ${h} Z`} fill={`url(#sp-${tone})`} />
+      <path d={line} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+      <circle cx={last[0]} cy={last[1]} r="3" fill="var(--surface)" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+    </svg>
   )
 }
 
