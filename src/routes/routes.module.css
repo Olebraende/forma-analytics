@@ -4,6 +4,13 @@
   grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr));
   margin-bottom: var(--space-5);
 }
+.kpis > div {
+  display: flex;
+}
+.kpis > div > * {
+  flex: 1;
+  min-width: 0;
+}
 .grid {
   display: grid;
   gap: var(--space-4);
