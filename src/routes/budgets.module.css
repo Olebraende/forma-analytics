@@ -1,0 +1,86 @@
+.monthNav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+.monthLabel {
+  min-width: 10rem;
+  text-align: center;
+  font-size: var(--text-heading);
+}
+.layout {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    align-items: start;
+  }
+  .cards {
+    grid-column: 1 / -1;
+  }
+}
+.total {
+  display: grid;
+  gap: var(--space-3);
+}
+.big {
+  font-size: var(--text-kpi);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.big[data-negative] {
+  color: var(--negative);
+}
+.muted {
+  color: var(--text-muted);
+  font-size: var(--text-label);
+  font-weight: 400;
+}
+.cards {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+}
+.cards article {
+  display: grid;
+  gap: var(--space-3);
+  height: 100%;
+}
+.cardTop {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.cardTitle {
+  flex: 1;
+  font-size: var(--text-card-title);
+}
+.cardActions {
+  display: flex;
+  margin-right: calc(var(--space-2) * -1);
+}
+.cardBig {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.cardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}

@@ -1,0 +1,78 @@
+.layout {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    align-items: start;
+  }
+  .cards {
+    grid-column: 1 / -1;
+  }
+}
+.total {
+  display: grid;
+  gap: var(--space-3);
+}
+.totalTitle {
+  font-size: var(--text-card-title);
+}
+.big {
+  font-size: var(--text-display);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.muted {
+  color: var(--text-muted);
+  font-size: var(--text-label);
+  font-weight: 400;
+}
+.cards {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+}
+.cards > li {
+  display: flex;
+}
+.card {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  width: 100%;
+}
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.cardTitle {
+  font-size: var(--text-card-title);
+}
+.cardBig {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.date {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+  font-size: var(--text-label);
+  color: var(--text-muted);
+}
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+.cardActions > button:first-child {
+  margin-right: auto;
+}
