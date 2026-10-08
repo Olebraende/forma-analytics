@@ -28,7 +28,8 @@ describe('IndexedDB storage', () => {
   })
   it('updates in place by id', async () => {
     await applyChanges({ put: { transactions: [t('a')] } })
-    await applyChanges({ put: { transactions: [{ ...t('a'), amount: 999 }] } })
+    const updated = { ...t('a'), amount: 999 }
+    await applyChanges({ put: { transactions: [updated] } })
     const all = (await loadAll()).transactions
     expect(all).toHaveLength(1)
     expect(all[0]?.amount).toBe(999)

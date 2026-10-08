@@ -25,7 +25,7 @@ describe('parseAmount', () => {
 
 describe('formatting', () => {
   it('formats minor units', () => {
-    expect(formatMoney(123456, 'NOK', 'en-GB').replace(/ /g, ' ')).toBe('NOK 1,234.56')
+    expect(formatMoney(123456, 'NOK', 'en-GB').replace(/\s/g, ' ')).toBe('NOK 1,234.56')
     expect(formatMoney(100000, 'USD', 'en-US')).toBe('$1,000')
   })
   it('round-trips through form input', () => {
