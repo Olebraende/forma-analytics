@@ -139,3 +139,45 @@ test('seasonal scenes: mascots show for Christmas and Halloween and can be turne
   await page.getByRole('radio', { name: /Halloween/ }).check()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'halloween')
 })
+
+test('paints a first screen even before any JavaScript runs', async ({ browser, baseURL }) => {
+  const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL })
+  const page = await ctx.newPage()
+  await page.goto('')
+  await expect(page.getByText('Forma Analytics', { exact: true })).toBeVisible()
+  expect(await page.content()).toContain('This app needs JavaScript to run')
+  await ctx.close()
+})
+
+test.describe('every theme renders under heavy CPU and network throttling (Lighthouse-like)', () => {
+  for (const theme of THEMES) {
+    test(theme, async ({ page, context, browserName }) => {
+      test.skip(browserName !== 'chromium', 'CDP throttling is Chromium only')
+      await useTheme(page, theme)
+      const cdp = await context.newCDPSession(page)
+      await cdp.send('Emulation.setCPUThrottlingRate', { rate: 6 })
+      await cdp.send('Network.enable')
+      await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 150, downloadThroughput: (1.6 * 1024 * 1024) / 8, uploadThroughput: (750 * 1024) / 8 })
+      const errors: string[] = []
+      page.on('pageerror', (e) => errors.push(String(e)))
+      await page.goto('#/')
+      await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible({ timeout: 25_000 })
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme)
+      expect(errors).toEqual([])
+    })
+  }
+})
+
+test.describe('empty states pass axe in a seasonal theme', () => {
+  for (const r of ['', 'transactions', 'budgets', 'goals', 'analytics']) {
+    test(`/${r || 'overview'}`, async ({ page }) => {
+      await page.addInitScript(() => localStorage.setItem('forma:prefs', JSON.stringify({ theme: 'christmas', demoSeeded: true })))
+      await page.goto(`#/${r}`)
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+      await expect(page.getByRole('heading', { level: 2 }).first()).toBeVisible()
+      await page.waitForTimeout(800)
+      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()
+      expect(results.violations.map((v) => v.id)).toEqual([])
+    })
+  }
+})
