@@ -43,8 +43,14 @@
   }
 }
 @media (max-width: 29.99rem) {
+  /* Visually hidden but still the button's accessible name. */
   .addLabel {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
   .headerRight > button:first-child {
     width: var(--touch);
