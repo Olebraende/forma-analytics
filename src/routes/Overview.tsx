@@ -90,7 +90,10 @@ export default function Overview() {
         actions={<Segmented name="period" label="Reporting period" value={period} onChange={setPeriod} options={PERIODS.map((p) => ({ id: p.id, label: p.label }))} />}
       />
 
-      <section aria-label={`Key figures, ${periodLabel}`} className={`${styles.kpis} stagger`}>
+      <section aria-labelledby="kpi-heading" className={`${styles.kpis} stagger`}>
+        <h2 id="kpi-heading" className="sr-only">
+          Key figures, {periodLabel}
+        </h2>
         <div style={{ '--i': 0 } as React.CSSProperties}>
           <KpiCard label="Total income" icon={<ArrowDownToLine size={16} strokeWidth={1.75} />} value={sum.income} change={changeRatio(sum.income, prev.income)} />
         </div>
