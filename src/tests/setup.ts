@@ -26,3 +26,9 @@ globalThis.matchMedia ??= ((query: string) => ({
   onchange: null,
   dispatchEvent: () => false,
 })) as unknown as typeof matchMedia
+
+// Highcharts needs real SVG layout (getBBox etc.), which jsdom lacks. Component tests use a stub;
+// real rendering is covered by the Playwright suite.
+vi.mock('@/charts/highcharts', () => ({
+  loadHighcharts: () => Promise.resolve({ chart: () => ({ update() {}, destroy() {}, reflow() {} }) }),
+}))

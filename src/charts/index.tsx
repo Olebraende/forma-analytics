@@ -1,5 +1,9 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
+import { usePrefs } from '@/app/prefs'
 import { CartesianChart } from './CartesianChart'
+import { useChartColors } from './chartTheme'
+import { HighchartsChart } from './HighchartsChart'
+import { donutOptions } from './options'
 import type { BarDatum, CartesianChartProps, ChartSeries, DonutDatum } from './types'
 import { seriesColor } from './types'
 import styles from './Charts.module.css'
@@ -107,9 +111,6 @@ export function BarChart({
   )
 }
 
-const R = 70
-const C = 2 * Math.PI * R
-
 export function DonutChart({
   data,
   formatValue,
@@ -123,59 +124,24 @@ export function DonutChart({
   label: string
   maxSlices?: number
 }) {
-  const [active, setActive] = useState<string | null>(null)
-  const sorted = [...data].filter((d) => d.value > 0).sort((a, b) => b.value - a.value)
-  const head = sorted.slice(0, maxSlices)
-  const rest = sorted.slice(maxSlices)
-  const slices = rest.length ? [...head, { id: 'other', label: 'Other', value: rest.reduce((s, d) => s + d.value, 0) }] : head
+  const colors = useChartColors()
+  const { reducedMotion } = usePrefs()
+  const slices = useMemo(() => {
+    const sorted = [...data].filter((d) => d.value > 0).sort((a, b) => b.value - a.value)
+    const rest = sorted.slice(maxSlices)
+    return rest.length ? [...sorted.slice(0, maxSlices), { id: 'other', label: 'Other', value: rest.reduce((s, d) => s + d.value, 0) }] : sorted
+  }, [data, maxSlices])
   const total = slices.reduce((s, d) => s + d.value, 0)
-  let offset = 0
+  const options = useMemo(() => donutOptions({ data: slices, formatValue, centerLabel, label, total, colors, reducedMotion }), [slices, formatValue, centerLabel, label, total, colors, reducedMotion])
   return (
     <div className={styles.donutWrap}>
       <div className={styles.donut}>
-        <svg viewBox="0 0 180 180" className={styles.donutSvg} role="img" aria-label={`${label}. Total ${formatValue(total)}. See the list for the breakdown.`}>
-          <g transform="rotate(-90 90 90)">
-            <circle cx="90" cy="90" r={R} fill="none" stroke="var(--surface-2)" strokeWidth="22" />
-            {slices.map((s, i) => {
-              const len = (s.value / total) * C
-              const gap = slices.length > 1 ? Math.min(3, len * 0.2) : 0
-              const el = (
-                <circle
-                  key={s.id}
-                  cx="90"
-                  cy="90"
-                  r={R}
-                  fill="none"
-                  stroke={seriesColor(i)}
-                  strokeWidth={active === s.id ? 26 : 22}
-                  strokeDasharray={`${Math.max(0, len - gap)} ${C - Math.max(0, len - gap)}`}
-                  strokeDashoffset={-offset}
-                  opacity={active && active !== s.id ? 0.4 : 1}
-                  className={styles.donutSegment}
-                  onPointerEnter={() => setActive(s.id)}
-                  onPointerLeave={() => setActive(null)}
-                />
-              )
-              offset += len
-              return el
-            })}
-          </g>
-          <text x="90" y="88" textAnchor="middle" className={styles.centerValue}>
-            {formatValue(total)}
-          </text>
-          <text x="90" y="104" textAnchor="middle" className={styles.centerLabel}>
-            {centerLabel}
-          </text>
-        </svg>
+        <div className={styles.donutSvg}>
+          <HighchartsChart options={options} height={220} />
+        </div>
         <ul className={styles.donutLegend}>
           {slices.map((s, i) => (
-            <li
-              key={s.id}
-              className={styles.donutRow}
-              data-active={active === s.id || undefined}
-              onPointerEnter={() => setActive(s.id)}
-              onPointerLeave={() => setActive(null)}
-            >
+            <li key={s.id} className={styles.donutRow}>
               <svg width="12" height="12" aria-hidden="true">
                 <rect width="12" height="12" rx={i % 2 ? 6 : 3} fill={seriesColor(i)} />
               </svg>

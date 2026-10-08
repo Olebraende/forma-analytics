@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from 'react'
 import { MotionConfig } from 'motion/react'
 import { DEFAULT_PREFS, loadPrefs, savePrefs, type Prefs } from '@/storage/prefs'
 import { resolveTheme, THEMES, type ThemeId } from '@/themes/themes'
@@ -48,7 +48,8 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
   const theme = useMemo(() => resolveTheme({ preference: prefs.theme, seasonal: prefs.seasonal, systemDark, date: new Date() }), [prefs.theme, prefs.seasonal, systemDark, day])
   const reducedMotion = prefs.motion === 'reduce' || systemReduced
 
-  useEffect(() => {
+  // Layout effect: descendants (e.g. charts) read the new theme's CSS values in their own effects.
+  useLayoutEffect(() => {
     const root = document.documentElement
     if (root.dataset.theme && root.dataset.theme !== theme && !reducedMotion) {
       root.classList.add('theme-switching')
