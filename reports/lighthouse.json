@@ -1,0 +1,138 @@
+{
+  "measuredAt": "2026-10-08T11:52:02.737Z",
+  "base": "http://localhost:4173/forma-analytics/",
+  "rows": [
+    {
+      "form": "mobile",
+      "route": "/",
+      "performance": 96,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "2.4 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    },
+    {
+      "form": "mobile",
+      "route": "/transactions",
+      "performance": 94,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "2.7 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    },
+    {
+      "form": "mobile",
+      "route": "/budgets",
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "2.6 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    },
+    {
+      "form": "mobile",
+      "route": "/goals",
+      "performance": 94,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "2.7 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    },
+    {
+      "form": "mobile",
+      "route": "/analytics",
+      "performance": 95,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "2.6 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    },
+    {
+      "form": "mobile",
+      "route": "/settings",
+      "performance": 94,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "2.7 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    },
+    {
+      "form": "desktop",
+      "route": "/",
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "0.5 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    },
+    {
+      "form": "desktop",
+      "route": "/transactions",
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "0.6 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    },
+    {
+      "form": "desktop",
+      "route": "/budgets",
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "0.6 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    },
+    {
+      "form": "desktop",
+      "route": "/goals",
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "0.6 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    },
+    {
+      "form": "desktop",
+      "route": "/analytics",
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "0.6 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    },
+    {
+      "form": "desktop",
+      "route": "/settings",
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "0.6 s",
+      "cls": "0",
+      "tbt": "0 ms"
+    }
+  ]
+}
