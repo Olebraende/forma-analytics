@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Forma Analytics | Personal finance dashboard</title>
+    <meta name="description" content="Forma Analytics is a private, local-first personal finance dashboard: transactions, budgets, savings goals and interactive analytics that never leave your browser." />
+    <meta name="theme-color" content="#f6f7f9" />
+    <meta name="color-scheme" content="light dark" />
+    <meta property="og:title" content="Forma Analytics" />
+    <meta property="og:description" content="Local-first personal finance analytics. Your data stays in your browser." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <link rel="preload" href="%BASE_URL%fonts/inter-latin-wght.woff2" as="font" type="font/woff2" crossorigin />
+    <script>
+      // Resolve the theme before first paint to avoid a flash of the wrong theme.
+      // Mirrors resolveTheme() in src/themes/themes.ts.
+      (function () {
+        try {
+          var p = JSON.parse(localStorage.getItem('forma:prefs') || '{}');
+          var all = ['light', 'dark', 'summer', 'christmas', 'halloween', 'aprilfools'];
+          var t = p.theme && all.indexOf(p.theme) > -1 ? p.theme : p.theme === 'auto' ? 'auto' : 'light';
+          if (t === 'auto') {
+            var d = new Date(), m = d.getMonth(), day = d.getDate(), s = null;
+            if (p.seasonal) {
+              if (m === 3 && day === 1) s = 'aprilfools';
+              else if (m === 9 && day >= 24) s = 'halloween';
+              else if (m === 11 && day <= 26) s = 'christmas';
+              else if (m >= 5 && m <= 7) s = 'summer';
+            }
+            t = s || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          }
+          var r = document.documentElement;
+          r.dataset.theme = t;
+          r.style.colorScheme = t === 'dark' || t === 'halloween' ? 'dark' : 'light';
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
