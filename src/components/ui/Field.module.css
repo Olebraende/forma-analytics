@@ -1,0 +1,63 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.label {
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--text);
+}
+.control {
+  width: 100%;
+  min-height: var(--touch);
+  padding: 0 var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: 1rem; /* 16px prevents iOS zoom on focus */
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.control::placeholder {
+  color: var(--text-subtle);
+}
+.control:hover {
+  border-color: var(--text-subtle);
+}
+.control:focus-visible {
+  outline: none;
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 28%, transparent);
+}
+.control[aria-invalid='true'] {
+  border-color: var(--negative);
+}
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23778' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+}
+.hint {
+  font-size: var(--text-caption);
+  color: var(--text-muted);
+}
+.error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-caption);
+  color: var(--negative);
+  font-weight: 500;
+  animation: shake-in var(--dur-base) var(--ease-out);
+}
+@keyframes shake-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
