@@ -8,12 +8,23 @@ import { MobileNav } from './MobileNav'
 import { ThemeMenu } from './ThemeMenu'
 import { Decor } from './Decor'
 import { Brand } from './Brand'
+import { Garland } from './Garland'
 import { Button, IconButton } from '@/components/ui/Button'
 import { useFinance } from '@/finance/store'
 import { usePrefs } from '@/app/prefs'
 import { NAV } from './nav'
 import styles from './AppLayout.module.css'
 
+const CHRISTMAS_LINES = [
+  'Ho ho ho! Your data never leaves this browser.',
+  'Making a list and checking it twice.',
+  'Wrapping up the year, one budget at a time.',
+]
+const HALLOWEEN_LINES = [
+  'Boo! Your data stays in this browser.',
+  'Nothing here is scarier than an unplanned expense.',
+  'Tracking your treats, not tricking you.',
+]
 const FOOLS_LINES = [
   'Balancing your books and, occasionally, a spoon on our nose.',
   'All numbers are real. Only the mood is fake.',
@@ -41,7 +52,8 @@ export function AppLayout() {
     mainRef.current?.focus({ preventScroll: true })
   }, [pathname, title])
 
-  const footnote = theme === 'aprilfools' ? (FOOLS_LINES[new Date().getMinutes() % FOOLS_LINES.length] as string) : 'Your data stays in this browser.'
+  const pick = (lines: string[]) => lines[new Date().getMinutes() % lines.length] as string
+  const footnote = theme === 'aprilfools' ? pick(FOOLS_LINES) : theme === 'christmas' ? pick(CHRISTMAS_LINES) : theme === 'halloween' ? pick(HALLOWEEN_LINES) : 'Your data stays in this browser.'
 
   return (
     <div className={styles.shell}>
@@ -50,7 +62,7 @@ export function AppLayout() {
       </a>
       <Decor />
       <Sidebar footnote={footnote} />
-      <MobileNav open={navOpen} onClose={() => setNavOpen(false)} />
+      <MobileNav open={navOpen} onClose={() => setNavOpen(false)} footnote={footnote} />
       <div className={styles.column}>
         <header className={styles.header}>
           <div className={styles.headerLeft}>
@@ -67,6 +79,7 @@ export function AppLayout() {
             </Button>
             <ThemeMenu />
           </div>
+          {theme === 'christmas' && <Garland />}
         </header>
         <main id="main" ref={mainRef} tabIndex={-1} className={styles.main}>
           {status === 'loading' ? (

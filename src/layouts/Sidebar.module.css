@@ -131,3 +131,30 @@
 :global([data-theme='halloween']) .collapse:hover {
   background: color-mix(in srgb, white 10%, transparent);
 }
+
+.cobweb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 7.5rem;
+  height: 7.5rem;
+  color: var(--sidebar-muted);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.logoWrap {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.hat {
+  position: absolute;
+  top: -11px;
+  left: -5px;
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+:global(html[data-decor='off']) .hat {
+  display: none;
+}

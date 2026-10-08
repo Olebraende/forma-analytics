@@ -25,6 +25,9 @@
   box-shadow: var(--shadow-lg);
   overflow-y: auto;
 }
+.mascot {
+  margin-top: var(--space-8);
+}
 .head {
   display: flex;
   align-items: center;

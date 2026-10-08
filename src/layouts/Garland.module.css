@@ -1,0 +1,49 @@
+.garland {
+  position: absolute;
+  inset: 100% 0 auto 0;
+  height: 26px;
+  pointer-events: none;
+  color: #7f1a1a;
+  overflow: hidden;
+}
+:global(html[data-decor='off']) .garland {
+  display: none;
+}
+.wire {
+  position: absolute;
+  inset: 0 0 auto 0;
+  width: 100%;
+  height: 16px;
+}
+.bulbs {
+  position: absolute;
+  inset: 0;
+}
+.bulb {
+  position: absolute;
+  width: 8px;
+  height: 11px;
+  margin-left: -4px;
+  border-radius: 50% 50% 55% 55%;
+  background: var(--c);
+  box-shadow: 0 0 8px 1px color-mix(in srgb, var(--c) 70%, transparent);
+  animation: twinkle 2.4s ease-in-out infinite;
+  animation-delay: var(--d);
+}
+@media (max-width: 40rem) {
+  .bulb:nth-child(even) {
+    display: none;
+  }
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+:global(html[data-motion='reduce']) .bulb {
+  animation: none;
+}

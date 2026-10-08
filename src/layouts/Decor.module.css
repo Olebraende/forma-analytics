@@ -2,11 +2,13 @@
   position: fixed;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
   pointer-events: none;
   color: var(--accent);
   opacity: 0.16;
 }
-:global(html[data-decor='off']) .decor {
+:global(html[data-decor='off']) .decor,
+:global(html[data-decor='off']) .sky {
   display: none;
 }
 .decor svg {
@@ -16,22 +18,122 @@
   top: calc(var(--header-h) + 1rem);
   right: 8%;
 }
-.b {
-  top: 38%;
-  right: 3%;
-}
 .c {
   bottom: 12%;
   right: 12%;
-}
-.drift {
-  animation: drift 9s ease-in-out infinite alternate;
 }
 .float {
   animation: drift 6s ease-in-out infinite alternate;
 }
 .spin {
   animation: spin 40s linear infinite;
+}
+
+/* Christmas snow */
+.decor[data-theme-decor='christmas'] {
+  color: #6b8aa3;
+  opacity: 0.55;
+}
+.flake {
+  position: absolute;
+  top: 0;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: #aac2d4;
+  animation: fall var(--dur) linear infinite;
+  animation-delay: var(--delay);
+  will-change: transform;
+}
+.flakeIcon {
+  background: none;
+  border-radius: 0;
+}
+@keyframes fall {
+  from {
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(var(--dx), 110vh, 0) rotate(180deg);
+  }
+}
+@media (max-width: 40rem) {
+  .flake:nth-child(3n) {
+    display: none;
+  }
+}
+
+/* Halloween */
+.decor[data-theme-decor='halloween'] {
+  color: #fb923c;
+  opacity: 0.4;
+}
+.moon {
+  position: absolute;
+  top: 12px;
+  right: 10.5rem;
+  filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.6));
+  color: #fcd34d;
+}
+.star {
+  color: #c4b5fd;
+  animation: twinkle 3s ease-in-out infinite;
+}
+.ghost {
+  bottom: 9%;
+  left: 38%;
+  color: #c4b5fd;
+  animation: drift 6s ease-in-out infinite alternate;
+}
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  overflow: hidden;
+  pointer-events: none;
+  color: #1a1026;
+}
+.bat {
+  position: absolute;
+  left: 0;
+  animation: fly calc(16s + var(--n) * 5s) linear infinite;
+  animation-delay: calc(var(--n) * 7s + 2s);
+  transform: translateX(-12vw);
+  color: #0a0612;
+  filter: drop-shadow(0 0 3px rgba(251, 146, 60, 0.6));
+}
+.flap {
+  display: block;
+  animation: flap 0.45s ease-in-out infinite alternate;
+  transform-origin: 50% 50%;
+}
+@keyframes fly {
+  0% {
+    transform: translate3d(-12vw, 0, 0);
+  }
+  45% {
+    transform: translate3d(55vw, 24px, 0);
+  }
+  100% {
+    transform: translate3d(112vw, -8px, 0);
+  }
+}
+@keyframes flap {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0.45);
+  }
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
 }
 @keyframes drift {
   from {
@@ -44,5 +146,32 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+:global(html[data-motion='reduce']) .flake,
+:global(html[data-motion='reduce']) .star,
+:global(html[data-motion='reduce']) .ghost,
+:global(html[data-motion='reduce']) .flap,
+:global(html[data-motion='reduce']) .float,
+:global(html[data-motion='reduce']) .spin {
+  animation: none;
+}
+:global(html[data-motion='reduce']) .bat {
+  animation: none;
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flake,
+  .star,
+  .ghost,
+  .flap,
+  .float,
+  .spin {
+    animation: none;
+  }
+  .bat {
+    animation: none;
+    display: none;
   }
 }

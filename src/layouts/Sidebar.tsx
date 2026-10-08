@@ -3,6 +3,7 @@ import { m } from 'motion/react'
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { NAV } from './nav'
 import { Brand } from './Brand'
+import { Mascot } from './Mascot'
 import { usePrefs } from '@/app/prefs'
 import styles from './Sidebar.module.css'
 
@@ -30,7 +31,8 @@ export function NavList({ onNavigate, collapsed = false, idPrefix }: { onNavigat
 }
 
 export function Sidebar({ footnote }: { footnote: string }) {
-  const { prefs, update } = usePrefs()
+  const { prefs, update, theme } = usePrefs()
+  const mascot = (theme === 'christmas' || theme === 'halloween') && prefs.decorations ? theme : null
   const collapsed = prefs.sidebarCollapsed
   return (
     <m.aside
@@ -40,6 +42,7 @@ export function Sidebar({ footnote }: { footnote: string }) {
       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
       data-collapsed={collapsed || undefined}
     >
+      {theme === 'halloween' && prefs.decorations && <Cobweb />}
       <div className={styles.top}>
         <Brand compact={collapsed} />
       </div>
@@ -47,7 +50,7 @@ export function Sidebar({ footnote }: { footnote: string }) {
         <NavList collapsed={collapsed} idPrefix="desktop" />
       </nav>
       <div className={styles.bottom}>
-        {!collapsed && <p className={styles.footnote}>{footnote}</p>}
+        {mascot ? <Mascot kind={mascot} line={footnote} collapsed={collapsed} /> : !collapsed && <p className={styles.footnote}>{footnote}</p>}
         <button
           type="button"
           className={styles.collapse}
@@ -60,5 +63,16 @@ export function Sidebar({ footnote }: { footnote: string }) {
         </button>
       </div>
     </m.aside>
+  )
+}
+
+function Cobweb() {
+  return (
+    <svg className={styles.cobweb} viewBox="0 0 100 100" aria-hidden="true">
+      <g fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round">
+        <path d="M0 0L100 0M0 0L0 100M0 0L82 62M0 0L62 82M0 0L96 30M0 0L30 96" />
+        <path d="M18 0Q14 14 0 18M38 0Q30 30 0 38M60 0Q46 46 0 60M82 0Q62 62 0 82" />
+      </g>
+    </svg>
   )
 }

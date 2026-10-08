@@ -20,7 +20,7 @@ export const THEMES: readonly ThemeMeta[] = [
   { id: 'light', name: 'Light', description: 'Bright and neutral. The default.', icon: Sun, scheme: 'light', swatch: ['#f6f7f9', '#ffffff', '#2563eb'] },
   { id: 'dark', name: 'Dark', description: 'Deep surfaces with muted accents.', icon: Moon, scheme: 'dark', swatch: ['#0b0f17', '#121826', '#3b6fe0'] },
   { id: 'summer', name: 'Summer', description: 'Warm whites and coastal teal.', icon: SunMedium, scheme: 'light', swatch: ['#fffaf0', '#fffdf8', '#0e7490'] },
-  { id: 'christmas', name: 'Christmas', description: 'Pine green and berry red.', icon: Snowflake, scheme: 'light', swatch: ['#f6f4ee', '#ffffff', '#14532d'] },
+  { id: 'christmas', name: 'Christmas', description: 'Berry red, pine green and snow.', icon: Snowflake, scheme: 'light', swatch: ['#faf4f1', '#ffffff', '#b91c1c'] },
   { id: 'halloween', name: 'Halloween', description: 'Midnight purple, pumpkin orange.', icon: Ghost, scheme: 'dark', swatch: ['#120b1c', '#1b1229', '#f97316'] },
   { id: 'aprilfools', name: 'April Fools', description: 'Deliberately unserious colors.', icon: Sparkles, scheme: 'light', swatch: ['#fdf4ff', '#ffffff', '#c026d3'] },
 ]

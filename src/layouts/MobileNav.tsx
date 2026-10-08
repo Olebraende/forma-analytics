@@ -3,11 +3,15 @@ import { X } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { NavList } from './Sidebar'
 import { Brand } from './Brand'
+import { Mascot } from './Mascot'
+import { usePrefs } from '@/app/prefs'
 import { IconButton } from '@/components/ui/Button'
 import styles from './MobileNav.module.css'
 
 /** Slide-in navigation drawer on a native modal <dialog> (focus trap and Escape included). */
-export function MobileNav({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function MobileNav({ open, onClose, footnote }: { open: boolean; onClose: () => void; footnote: string }) {
+  const { prefs, theme } = usePrefs()
+  const mascot = (theme === 'christmas' || theme === 'halloween') && prefs.decorations ? theme : null
   const ref = useRef<HTMLDialogElement>(null)
   const { pathname } = useLocation()
   const first = useRef(true)
@@ -49,6 +53,11 @@ export function MobileNav({ open, onClose }: { open: boolean; onClose: () => voi
         <nav aria-label="Main">
           <NavList idPrefix="mobile" onNavigate={onClose} />
         </nav>
+        {mascot && (
+          <div className={styles.mascot}>
+            <Mascot kind={mascot} line={footnote} />
+          </div>
+        )}
       </div>
     </dialog>
   )
