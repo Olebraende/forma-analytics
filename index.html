@@ -73,7 +73,7 @@
         window.addEventListener('vite:preloadError', function () { reload(); });
         window.addEventListener('error', function (e) {
           var t = e.target;
-          if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK')) { if (!reload()) fail('a file failed to load'); }
+          if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK')) { if (!reload()) fail('failed to load ' + (t.src || t.href || 'a file')); }
         }, true);
         window.addEventListener('load', function () {
           setTimeout(function () { if (!document.querySelector('.boot')) { try { sessionStorage.removeItem('forma:reloaded'); } catch (e) {} } }, 3000);
