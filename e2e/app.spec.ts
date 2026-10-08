@@ -125,3 +125,16 @@ test('no network requests leave the origin', async ({ page }) => {
   for (const r of ROUTES) await page.goto(`#/${r}`)
   expect(external).toEqual([])
 })
+
+test('seasonal scenes: mascots show for Christmas and Halloween and can be turned off', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'sidebar mascot is shown on desktop')
+  await page.addInitScript(() => localStorage.setItem('forma:prefs', JSON.stringify({ theme: 'christmas' })))
+  await page.goto('#/')
+  await expect(page.locator('aside')).toContainText(/Ho ho ho|checking it twice|Wrapping up/)
+  await page.goto('#/settings')
+  await page.getByRole('switch', { name: 'Decorative seasonal effects' }).uncheck()
+  await expect(page.locator('html')).toHaveAttribute('data-decor', 'off')
+  await expect(page.locator('aside svg[viewBox="0 0 64 64"]')).toBeHidden()
+  await page.getByRole('radio', { name: /Halloween/ }).check()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'halloween')
+})
