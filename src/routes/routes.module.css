@@ -1,7 +1,7 @@
 .kpis {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr));
   margin-bottom: var(--space-5);
 }
 .grid {

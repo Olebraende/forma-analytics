@@ -23,11 +23,13 @@ export function parseAmount(input: string): Minor | null {
   if (sep !== -1) {
     const tail = cleaned.slice(sep + 1)
     const head = cleaned.slice(0, sep)
+    const GROUPED = /^\d{1,3}([,.]\d{3})*$/
     if (tail.length === 3) {
+      if (!GROUPED.test(cleaned)) return null
       whole = cleaned.replace(/[,.]/g, '')
     } else if (tail.length === 1 || tail.length === 2) {
       // The decimal separator may not also appear as a grouping separator.
-      if (head.includes(cleaned[sep] as string)) return null
+      if (head.includes(cleaned[sep] as string) || (head.match(/[,.]/) && !GROUPED.test(head))) return null
       whole = head.replace(/[,.]/g, '')
       frac = tail
     } else {

@@ -38,12 +38,12 @@ export function previousRange(range: DateRange): DateRange {
   const toKey = monthKey(range.to)
   const count = monthsBetween(fromKey, toKey).length
   const isWholeMonths = range.to === monthEnd(toKey)
-  if (!isWholeMonths && count === 1) {
-    // Partial current month: compare against the same span of the previous month.
-    const prev = addMonths(fromKey, -1)
+  if (!isWholeMonths) {
+    // Partial current period: compare against the same span one period earlier, same day of month.
+    const prevToKey = addMonths(toKey, -count)
     const day = Number(range.to.slice(8, 10))
-    const lastDay = Number(monthEnd(prev).slice(8, 10))
-    return { from: monthStart(prev), to: `${prev}-${String(Math.min(day, lastDay)).padStart(2, '0')}` }
+    const lastDay = Number(monthEnd(prevToKey).slice(8, 10))
+    return { from: monthStart(addMonths(fromKey, -count)), to: `${prevToKey}-${String(Math.min(day, lastDay)).padStart(2, '0')}` }
   }
   const prevTo = addMonths(fromKey, -1)
   const prevFrom = addMonths(fromKey, -count)
