@@ -32,7 +32,7 @@ Light (default), Dark, Summer, Christmas, Halloween and April Fools. All are sem
 
 ## Tech stack
 
-React 19, TypeScript (strict), Vite, React Router (hash routing for static hosting), CSS Modules and CSS custom properties, Lucide React, Motion for React (lazy-loaded), IndexedDB, Vitest, React Testing Library, Playwright with axe-core, ESLint and GitHub Actions. Font: Inter Variable, self-hosted as a Latin-subset WOFF2.
+React 19, TypeScript (strict), Vite, React Router (hash routing for static hosting), CSS Modules and CSS custom properties, Lucide React, Motion for React (lazy-loaded), Highcharts (lazy-loaded, non-commercial licence), IndexedDB, Vitest, React Testing Library, Playwright with axe-core, ESLint and GitHub Actions. Font: Inter Variable, self-hosted as a Latin-subset WOFF2.
 
 There are no backend, analytics or third-party runtime services, and no state-management library.
 
@@ -64,7 +64,7 @@ The Playwright suite checks every route for console errors and horizontal overfl
 ```
 src/
   app/        providers: preferences/theme, routing, lazy motion
-  charts/     typed chart components (SVG), see docs/CHARTING.md
+  charts/     typed chart components on Highcharts, see docs/CHARTING.md
   components/ design-system primitives and shared UI
   data/       categories and demo data generator
   features/   feature-specific forms
@@ -91,23 +91,23 @@ Presentation, state, persistence, calculations, charts and theming are kept in s
 
 ## Accessibility
 
-The target is WCAG 2.2 AA. This includes semantic landmarks and headings, a skip link, keyboard-operable controls with visible focus, native `<dialog>` modals with focus management, labelled form fields with associated error messages, live-region announcements, `prefers-reduced-motion` support plus an in-app setting, and charts that never rely on colour alone (marker shapes, dash styles, fill patterns, direct values, keyboard-readable tooltips and data tables). Automated axe checks pass on all routes in all themes. Automated checks do not replace testing with real assistive technology, which has not been done yet.
+The target is WCAG 2.2 AA. This includes semantic landmarks and headings, a skip link, keyboard-operable controls with visible focus, native `<dialog>` modals with focus management, labelled form fields with associated error messages, live-region announcements, `prefers-reduced-motion` support plus an in-app setting, and charts that never rely on colour alone (marker shapes, dash styles, stripe patterns, direct values, the Highcharts accessibility module and data tables). Automated axe checks pass on all routes in all themes. Automated checks do not replace testing with real assistive technology, which has not been done yet.
 
 ## Performance and Lighthouse
 
-Measured with Lighthouse against the production build served by `vite preview` on a local machine (Chrome, default Lighthouse throttling; mobile uses simulated slow 4G and 4x CPU slowdown). Run on 8 Oct 2026 with `npm run lighthouse`; raw results are in `reports/lighthouse.json`.
+Measured with Lighthouse against the production build served by `vite preview` on a local machine (Chrome, default Lighthouse throttling; mobile uses simulated slow 4G and 4x CPU slowdown). Re-measured on 8 Oct 2026 after the Highcharts integration with `npm run lighthouse`; raw results are in `reports/lighthouse.json`.
 
 | Route | Form factor | Performance | Accessibility | Best Practices | SEO | LCP | CLS |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | All six routes | Desktop | 100 | 100 | 100 | 100 | 0.5 to 0.6 s | 0 |
 | Overview | Mobile | 96 | 100 | 100 | 100 | 2.4 s | 0 |
-| Transactions, Budgets, Goals, Analytics, Settings | Mobile | 94 to 95 | 100 | 100 | 100 | 2.6 to 2.7 s | 0 |
+| Transactions, Budgets, Goals, Analytics, Settings | Mobile | 93 to 95 | 100 | 100 | 100 | 2.7 to 2.9 s | 0 |
 
-**Not 100 on mobile performance.** LCP under simulated slow 4G is limited by downloading and running the main bundle (about 91 KB gzipped, mostly React, React DOM and React Router) and then the lazy route chunk. Preloading the landing route's chunks helped the Overview. Further gains would likely require a smaller router or React alternative. Scores from a local server do not include real-network or CDN behaviour, so measure the deployed site too.
+**Not 100 on mobile performance.** LCP under simulated slow 4G is limited by downloading and running the main bundle (about 94 KB gzipped, mostly React, React DOM and React Router; Highcharts is a separate lazy chunk) and then the lazy route chunk. Preloading the landing route's chunks helped the Overview. Further gains would likely require a smaller router or React alternative. Scores from a local server do not include real-network or CDN behaviour, so measure the deployed site too.
 
 ## Deployment
 
-GitHub Actions (`.github/workflows/ci.yml`) type-checks, lints, runs unit and e2e tests, then builds and deploys `dist/` to GitHub Pages from `main` only after those checks pass. The Vite `base` is `/forma-analytics/` and the app uses hash routing, so refresh and direct links work on static hosting. Dependabot keeps npm packages and Actions up to date.
+GitHub Actions (`.github/workflows/ci.yml`) type-checks, lints, runs unit and e2e tests, then builds and deploys `dist/` to GitHub Pages from `main` only after those checks pass. The Vite `base` is `/forma-analytics/` and the app uses hash routing, so refresh and direct links work on static hosting. Dependabot keeps npm packages and Actions up to date, and a workflow auto-merges its patch/minor (and all Actions) updates once the `verify` check passes. Major npm updates are left for manual review. `main` blocks force-pushes and deletion, and requires the `verify` check for merges; the repository owner can still push directly.
 
 ## Browser support
 
@@ -115,8 +115,8 @@ Current versions of Chrome, Edge, Firefox and Safari. The app relies on IndexedD
 
 ## Charting and licences
 
-Charts are rendered by in-house SVG components instead of Highcharts because permission for a public portfolio deployment could not be confirmed. See [docs/CHARTING.md](docs/CHARTING.md).
+Charts use Highcharts, loaded lazily behind a typed abstraction. Highcharts is free only for non-commercial use under the Highsoft EULA and needs a paid licence for commercial use. This project is a personal, non-commercial portfolio and is used on that basis. See [docs/CHARTING.md](docs/CHARTING.md) for details and how to swap the chart layer.
 
-Original project code is licensed under the [MIT License](LICENSE). It does not override the licences of third-party dependencies or assets, for example Inter (SIL Open Font License 1.1, see `public/fonts/Inter-OFL.txt`), React, Lucide and Motion, which keep their own licences.
+Original project code is licensed under the [MIT License](LICENSE). It does not override the licences of third-party dependencies or assets, for example Inter (SIL Open Font License 1.1, see `public/fonts/Inter-OFL.txt`), React, Lucide, Motion and Highcharts, which keep their own licences. Highcharts is **not** covered by the MIT licence.
 
 Copyright (c) 2026 Ole Mathias Hammer Brænde

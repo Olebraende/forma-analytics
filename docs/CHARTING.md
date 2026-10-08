@@ -1,19 +1,32 @@
-# Charting library decision
+# Charts and the Highcharts licence
 
-**Decision:** Forma Analytics renders its charts with its own dependency-free SVG components in `src/charts/`. Highcharts is not included.
+Charts use **Highcharts**, behind a typed abstraction in `src/charts/`.
 
-## Why not Highcharts
+## Licence
 
-Highcharts is the preferred library in the project brief, but it is not free for every use. Its free tier covers personal, educational and non-profit use, and anything else needs a commercial licence. This is a public repository and a public GitHub Pages deployment that doubles as a professional portfolio piece. Permission for that exact use has not been confirmed, and public availability or an educational motivation is not a licence. Until written confirmation exists, no Highcharts code or assets are distributed in this repository or in the deployed build.
+Highcharts is not free for every use. Its terms (https://www.highcharts.com/license) split into:
 
-## What was built instead
+- **Non-commercial use**, governed by the Highsoft End-User License Agreement (https://www.highcharts.com/license-eula). This covers personal, educational and non-profit use.
+- **Commercial use**, which needs a paid Highsoft licence.
 
-- Typed components that take normalized data: `LineChart`, `AreaChart`, `ColumnChart`, `BarChart`, `DonutChart` and `FinancialTrendChart`. All of them except `BarChart` and `DonutChart` are thin wrappers over `CartesianChart`.
-- Business logic lives in `src/finance/` and never touches chart configuration. The chart components know nothing about transactions or budgets.
-- Charts respond to theme changes (they use the `--c1`..`--c8` CSS tokens), data changes, filters and resizing (`ResizeObserver`).
-- Accessibility is built in. Series differ by marker shape, dash style and fill pattern as well as colour. There is a keyboard-operable tooltip (arrow keys), a live-region readout, and every chart card has a data table alternative and a text summary.
-- No library means no extra bundle weight: the whole chart layer is a few kilobytes.
+Forma Analytics is a personal, non-commercial portfolio project, and it is used on that basis. The project owner chose to use Highcharts and is responsible for confirming that this use matches the licence terms. This repository does not contain a commercial Highcharts licence, and the MIT licence of the project code does not cover Highcharts. **If the app is ever used commercially or offered as a service, a commercial licence is required, or the chart layer must be swapped out as described below.**
 
-## Switching to Highcharts later
+The default "Highcharts.com" credits link is kept visible on every chart.
 
-If a licence is confirmed, reimplement the exported components in `src/charts/index.tsx` and `CartesianChart.tsx` against Highcharts, keeping the prop types in `src/charts/types.ts`. Load Highcharts with a dynamic `import()` so it stays out of the initial bundle. No page needs to change.
+## How it is integrated
+
+- `highcharts.ts` loads Highcharts, its accessibility module and the pattern-fill module with a dynamic `import()` on first use. Pages without charts never download it, and it is a separate lazy chunk (about 103 KB gzipped).
+- `options.ts` turns normalized, typed props into Highcharts options. Business logic lives in `src/finance/` and never touches chart configuration.
+- `HighchartsChart.tsx` creates the chart once, then calls `chart.update()` on data, filter, period or theme changes so charts animate between datasets instead of being recreated. A `ResizeObserver` reflows it on resize. Height is reserved up front, so loading causes no layout shift.
+- `chartTheme.ts` reads the active theme's CSS custom properties (`--c1`..`--c8`, text and border tokens), so charts follow all six themes.
+- Reduced motion turns Highcharts animation off.
+
+## Accessibility
+
+Series are distinguished by marker shape, dash style and stripe patterns as well as color. The Highcharts accessibility module provides keyboard navigation and screen reader descriptions (formatted with our currency and locale). Every chart sits in a card with a text summary and a data table alternative. Highcharts' hidden title heading is rendered as a plain element so heading order stays valid.
+
+`BarChart` (budget versus actual, goals) is a plain HTML/CSS component with visible numbers, which needs no charting library.
+
+## Swapping Highcharts out
+
+Only `HighchartsChart.tsx`, `options.ts`, `highcharts.ts`, `chartTheme.ts` and the donut in `index.tsx` know about Highcharts. Reimplement those against another library, keeping the prop types in `types.ts`, and no page needs to change.
