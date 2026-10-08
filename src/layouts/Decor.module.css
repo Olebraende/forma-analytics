@@ -1,0 +1,48 @@
+.decor {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  color: var(--accent);
+  opacity: 0.16;
+}
+:global(html[data-decor='off']) .decor {
+  display: none;
+}
+.decor svg {
+  position: absolute;
+}
+.a {
+  top: calc(var(--header-h) + 1rem);
+  right: 8%;
+}
+.b {
+  top: 38%;
+  right: 3%;
+}
+.c {
+  bottom: 12%;
+  right: 12%;
+}
+.drift {
+  animation: drift 9s ease-in-out infinite alternate;
+}
+.float {
+  animation: drift 6s ease-in-out infinite alternate;
+}
+.spin {
+  animation: spin 40s linear infinite;
+}
+@keyframes drift {
+  from {
+    transform: translateY(0) rotate(0deg);
+  }
+  to {
+    transform: translateY(14px) rotate(12deg);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

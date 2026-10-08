@@ -1,0 +1,89 @@
+.shell {
+  display: flex;
+  min-height: 100dvh;
+}
+.column {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  height: var(--header-h);
+  padding: 0 var(--gutter);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.headerLeft,
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.menuButton {
+  margin-left: calc(var(--space-2) * -1);
+}
+.mobileBrand {
+  display: block;
+}
+@media (min-width: 60rem) {
+  .menuButton,
+  .mobileBrand {
+    display: none;
+  }
+}
+@media (max-width: 29.99rem) {
+  .addLabel {
+    display: none;
+  }
+  .headerRight > button:first-child {
+    width: var(--touch);
+    padding: 0;
+  }
+}
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--gutter) var(--space-12);
+}
+.main:focus {
+  outline: none;
+}
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  background: var(--accent-soft);
+  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: var(--radius-md);
+  font-size: var(--text-label);
+}
+.banner svg {
+  flex-shrink: 0;
+  color: var(--accent-text);
+}
+.banner p {
+  flex: 1;
+}
+.banner[data-tone='negative'] {
+  background: var(--negative-soft);
+  border-color: color-mix(in srgb, var(--negative) 30%, transparent);
+}
+.banner[data-tone='negative'] svg {
+  color: var(--negative);
+}
