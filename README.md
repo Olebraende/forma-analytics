@@ -126,6 +126,8 @@ Measured with Lighthouse against the **deployed site** (https://olebraende.githu
 
 **Why mobile performance is not 100.** On simulated slow 4G, the largest paint is limited by downloading and running the main bundle (about 94 KB gzipped, mostly React, React DOM and React Router) and then the lazy route chunk. The Overview is slowest because it also mounts the charts. Highcharts itself is a separate lazy chunk, and Motion loads after first paint. Preloading the landing route's chunks already helped; getting further would likely need a smaller router or React alternative. Scores vary from run to run.
 
+**All six themes.** Seasonal and dark themes are checked too, since a theme must never break the page: Lighthouse on the Christmas, Halloween and April Fools themes scores 100 in all four categories on both mobile and desktop for the app shell, and the Playwright suite loads every theme under 6x CPU and slow-network throttling. `index.html` ships a static loading shell so something always paints before JavaScript runs, and an error boundary shows a readable message (with a reset-appearance button) instead of a blank page if rendering ever fails.
+
 **Running Lighthouse yourself.** Use an incognito window with extensions turned off and keep the tab in the foreground until it finishes. Chrome may warn that IndexedDB data can affect results; that only means the app has saved data in that browser, and the page still renders normally. A "NO_FCP" error means the browser tab was not painting during the run, for example because it was in the background or an extension interfered.
 
 ## Deployment
