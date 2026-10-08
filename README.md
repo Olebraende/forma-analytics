@@ -14,11 +14,11 @@ Forma Analytics is an independently branded educational and portfolio project, n
 
 ## Features
 
-- **Overview:** income, expenses, net cash flow, budget remaining and savings progress, with period selection, comparison against the previous period, trend and category charts, generated insights and recent transactions.
+- **Overview:** income, expenses, net cash flow, budget remaining and savings progress, with period selection, comparison against the previous period, sparkline trends in the KPI cards, trend and category charts, generated insights and recent transactions.
 - **Transactions:** add, edit and delete income and expenses with validation and confirmations. Search, filter by type, category and date range, sort, and paginate.
 - **Budgets:** monthly category limits, remaining amounts, utilisation, overspend and near-limit indicators, a month switcher and a budget-versus-actual chart.
 - **Savings goals:** targets, saved amounts, optional dates with a required-per-month estimate, completion state and a progress chart.
-- **Analytics:** income versus expenses, spending trend, cumulative savings, category breakdown, budget versus actual, goal progress and year-over-year comparison, filterable by date range and category. Every chart has a text summary and a data table.
+- **Analytics:** income versus expenses, spending trend, cumulative savings, category breakdown, a category-by-month spending heatmap, budget versus actual, goal progress and year-over-year comparison, filterable by date range and category. Every chart has a text summary and a data table.
 - **Settings:** theme, seasonal automation, motion preference, currency, locale, JSON backup and import, CSV export, demo data management and data deletion.
 - **Demo mode:** realistic fictional data on first launch, clearly labelled and separate from your own records. Removing or resetting it never touches your data.
 

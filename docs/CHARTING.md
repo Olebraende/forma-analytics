@@ -15,7 +15,7 @@ The default "Highcharts.com" credits link is kept visible on every chart.
 
 ## How it is integrated
 
-- `highcharts.ts` loads Highcharts, its accessibility module and the pattern-fill module with a dynamic `import()` on first use. Pages without charts never download it, and it is a separate lazy chunk (about 103 KB gzipped).
+- `highcharts.ts` loads Highcharts, its accessibility, pattern-fill and heatmap modules with a dynamic `import()` on first use. Pages without charts never download it, and it is a separate lazy chunk (about 103 KB gzipped).
 - `options.ts` turns normalized, typed props into Highcharts options. Business logic lives in `src/finance/` and never touches chart configuration.
 - `HighchartsChart.tsx` creates the chart once, then calls `chart.update()` on data, filter, period or theme changes so charts animate between datasets instead of being recreated. A `ResizeObserver` reflows it on resize. Height is reserved up front, so loading causes no layout shift.
 - `chartTheme.ts` reads the active theme's CSS custom properties (`--c1`..`--c8`, text and border tokens), so charts follow all six themes.
@@ -24,6 +24,8 @@ The default "Highcharts.com" credits link is kept visible on every chart.
 ## Accessibility
 
 Series are distinguished by marker shape, dash style and stripe patterns as well as color. The Highcharts accessibility module provides keyboard navigation and screen reader descriptions (formatted with our currency and locale). Every chart sits in a card with a text summary and a data table alternative. Highcharts' hidden title heading is rendered as a plain element so heading order stays valid.
+
+Charts use gradient columns, smooth spline and area-spline lines with ringed markers, a rounded interactive donut and a category-by-month heatmap with per-cell contrast-checked labels. The KPI sparklines are small dependency-free SVGs, since they are decorative.
 
 `BarChart` (budget versus actual, goals) is a plain HTML/CSS component with visible numbers, which needs no charting library.
 

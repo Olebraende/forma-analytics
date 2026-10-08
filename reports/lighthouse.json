@@ -1,5 +1,5 @@
 {
-  "measuredAt": "2026-10-08T12:11:08.142Z",
+  "measuredAt": "2026-10-08T12:39:39.185Z",
   "base": "http://localhost:4173/forma-analytics/",
   "rows": [
     {
@@ -16,11 +16,11 @@
     {
       "form": "mobile",
       "route": "/transactions",
-      "performance": 95,
+      "performance": 94,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
-      "lcp": "2.7 s",
+      "lcp": "2.9 s",
       "cls": "0",
       "tbt": "0 ms"
     },
@@ -38,24 +38,24 @@
     {
       "form": "mobile",
       "route": "/goals",
-      "performance": 93,
-      "accessibility": 100,
-      "bestPractices": 100,
-      "seo": 100,
-      "lcp": "2.9 s",
-      "cls": "0",
-      "tbt": "0 ms"
-    },
-    {
-      "form": "mobile",
-      "route": "/analytics",
       "performance": 95,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
       "lcp": "2.7 s",
       "cls": "0",
-      "tbt": "90 ms"
+      "tbt": "0 ms"
+    },
+    {
+      "form": "mobile",
+      "route": "/analytics",
+      "performance": 93,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcp": "2.7 s",
+      "cls": "0",
+      "tbt": "160 ms"
     },
     {
       "form": "mobile",
