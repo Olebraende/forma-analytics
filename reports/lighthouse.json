@@ -1,5 +1,5 @@
 {
-  "measuredAt": "2026-10-08T11:52:02.737Z",
+  "measuredAt": "2026-10-08T12:11:08.142Z",
   "base": "http://localhost:4173/forma-analytics/",
   "rows": [
     {
@@ -11,12 +11,12 @@
       "seo": 100,
       "lcp": "2.4 s",
       "cls": "0",
-      "tbt": "0 ms"
+      "tbt": "20 ms"
     },
     {
       "form": "mobile",
       "route": "/transactions",
-      "performance": 94,
+      "performance": 95,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
@@ -27,22 +27,22 @@
     {
       "form": "mobile",
       "route": "/budgets",
-      "performance": 95,
+      "performance": 94,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
-      "lcp": "2.6 s",
+      "lcp": "2.9 s",
       "cls": "0",
       "tbt": "0 ms"
     },
     {
       "form": "mobile",
       "route": "/goals",
-      "performance": 94,
+      "performance": 93,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
-      "lcp": "2.7 s",
+      "lcp": "2.9 s",
       "cls": "0",
       "tbt": "0 ms"
     },
@@ -53,9 +53,9 @@
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
-      "lcp": "2.6 s",
+      "lcp": "2.7 s",
       "cls": "0",
-      "tbt": "0 ms"
+      "tbt": "90 ms"
     },
     {
       "form": "mobile",
@@ -64,7 +64,7 @@
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
-      "lcp": "2.7 s",
+      "lcp": "2.9 s",
       "cls": "0",
       "tbt": "0 ms"
     },
