@@ -36,16 +36,61 @@
         } catch (e) {}
       })();
     </script>
+    <style>
+      .boot{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1rem;text-align:center;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f7f9;color:#14181f}
+      .boot p{margin:0}.boot-title{font-weight:700;font-size:1.25rem}.boot-text{color:#4a5260}
+      .boot button{margin-top:.75rem;padding:.6rem 1rem;font:inherit;border-radius:.5rem;border:1px solid #14181f;background:#14181f;color:#fff;cursor:pointer}
+      [data-theme="dark"] .boot,[data-theme="halloween"] .boot{background:#0f1218;color:#f2f4f8}
+      [data-theme="dark"] .boot-text,[data-theme="halloween"] .boot-text{color:#b4bcc9}
+      [data-theme="dark"] .boot button,[data-theme="halloween"] .boot button{background:#f2f4f8;color:#0f1218;border-color:#f2f4f8}
+    </style>
+    <script>
+      // Recovery: a stale cached page can point at files a newer deploy removed.
+      // Reload once with a cache-busting query; if the app still cannot start, say so.
+      (function () {
+        function reload() {
+          try {
+            if (sessionStorage.getItem('forma:reloaded')) return false;
+            sessionStorage.setItem('forma:reloaded', '1');
+          } catch (e) { return false; }
+          var u = new URL(location.href);
+          u.searchParams.set('r', String(Date.now()));
+          location.replace(u.toString());
+          return true;
+        }
+        function fail(detail) {
+          var el = document.querySelector('.boot-text');
+          if (!el || !document.querySelector('.boot')) return;
+          el.textContent = 'The app could not start' + (detail ? ' (' + detail + ')' : '') + '. Try reloading the page.';
+          if (!document.querySelector('.boot button')) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.textContent = 'Reload';
+            b.onclick = function () { var u = new URL(location.href); u.searchParams.set('r', String(Date.now())); location.replace(u.toString()); };
+            el.parentNode.appendChild(b);
+          }
+        }
+        window.addEventListener('vite:preloadError', function () { reload(); });
+        window.addEventListener('error', function (e) {
+          var t = e.target;
+          if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK')) { if (!reload()) fail('a file failed to load'); }
+        }, true);
+        window.addEventListener('load', function () {
+          setTimeout(function () { if (!document.querySelector('.boot')) { try { sessionStorage.removeItem('forma:reloaded'); } catch (e) {} } }, 3000);
+          setTimeout(function () { if (document.querySelector('.boot')) fail(''); }, 10000);
+        });
+      })();
+    </script>
   </head>
   <body>
     <div id="root">
       <!-- Static first paint: shown instantly, replaced when the app mounts. -->
-      <div class="boot" role="status">
+      <main class="boot">
         <svg width="40" height="40" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor" /><path d="M9 23V9h14v3.2H12.4v3.1h8.3v3.1h-8.3V23z" fill="#fff" /></svg>
         <p class="boot-title">Forma Analytics</p>
-        <p class="boot-text">Loading your dashboard</p>
+        <p class="boot-text" role="status">Loading your dashboard</p>
         <noscript><p class="boot-text">This app needs JavaScript to run. Your data never leaves your browser.</p></noscript>
-      </div>
+      </main>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

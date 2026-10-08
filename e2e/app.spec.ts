@@ -181,3 +181,11 @@ test.describe('empty states pass axe in a seasonal theme', () => {
     })
   }
 })
+
+test('boot shell recovers from missing assets and has a main landmark', async ({ page }) => {
+  await page.route('**/assets/*.js', (r) => r.abort())
+  await page.goto('./')
+  await expect(page.locator('main.boot')).toHaveCount(1)
+  await expect(page.getByText(/could not start/i)).toBeVisible({ timeout: 15000 })
+  await expect(page.getByRole('button', { name: 'Reload' })).toBeVisible()
+})
