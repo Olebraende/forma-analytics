@@ -1,5 +1,6 @@
 .card {
   container-type: inline-size;
+  min-height: 10.5rem;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);

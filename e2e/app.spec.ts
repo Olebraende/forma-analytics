@@ -40,7 +40,8 @@ test.describe('accessibility (axe, WCAG 2.x A/AA)', () => {
         await page.goto(`#/${r}`)
         await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
         await expect(page.locator('html')).toHaveAttribute('data-theme', theme)
-        await page.waitForTimeout(700) // let entrance animations settle before measuring contrast
+        if (r === '' || r === 'analytics') await expect(page.locator('.highcharts-container').first()).toBeVisible()
+        await page.waitForTimeout(1200) // let entrance and chart animations settle before measuring contrast
         const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()
         expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).slice(0, 3).join(' | ')}`)).toEqual([])
       })
@@ -132,7 +133,7 @@ test('seasonal scenes: mascots show for Christmas and Halloween and can be turne
   await page.goto('#/')
   await expect(page.locator('aside')).toContainText(/Ho ho ho|checking it twice|Wrapping up/)
   await page.goto('#/settings')
-  await page.getByRole('switch', { name: 'Decorative seasonal effects' }).uncheck()
+  await page.getByText('Decorative seasonal effects').click()
   await expect(page.locator('html')).toHaveAttribute('data-decor', 'off')
   await expect(page.locator('aside svg[viewBox="0 0 64 64"]')).toBeHidden()
   await page.getByRole('radio', { name: /Halloween/ }).check()
