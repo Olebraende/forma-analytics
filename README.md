@@ -8,9 +8,13 @@ Forma Analytics is an independently branded educational and portfolio project, n
 
 ![Overview in the light theme](docs/screenshots/overview-light.png)
 
+| Analytics (light) | Spending heatmap (dark) |
+| --- | --- |
+| ![Analytics in the light theme](docs/screenshots/analytics-light.png) | ![Spending heatmap in the dark theme](docs/screenshots/heatmap-dark.png) |
+
 | Dark | Halloween | Christmas | Mobile (Summer) |
 | --- | --- | --- | --- |
-| ![Dark](docs/screenshots/overview-dark.png) | ![Halloween](docs/screenshots/analytics-halloween.png) | ![Christmas](docs/screenshots/budgets-christmas.png) | ![Mobile](docs/screenshots/overview-mobile.png) |
+| ![Overview in the dark theme](docs/screenshots/overview-dark.png) | ![Analytics in the Halloween theme](docs/screenshots/analytics-halloween.png) | ![Budgets in the Christmas theme](docs/screenshots/budgets-christmas.png) | ![Overview on a phone in the Summer theme](docs/screenshots/overview-mobile.png) |
 
 ## Features
 
@@ -95,15 +99,34 @@ The target is WCAG 2.2 AA. This includes semantic landmarks and headings, a skip
 
 ## Performance and Lighthouse
 
-Measured with Lighthouse against the production build served by `vite preview` on a local machine (Chrome, default Lighthouse throttling; mobile uses simulated slow 4G and 4x CPU slowdown). Re-measured on 8 Oct 2026 after the Highcharts integration with `npm run lighthouse`; raw results are in `reports/lighthouse.json`.
+Measured with Lighthouse against the **deployed site** (https://olebraende.github.io/forma-analytics/) on 8 Oct 2026, using Chrome with Lighthouse's default throttling (mobile means simulated slow 4G and a 4x CPU slowdown). Reproduce with `npm run lighthouse`; raw results are in `reports/lighthouse-live.json`, and `reports/lighthouse.json` holds an earlier run against a local production build.
+
+**Desktop: 100 in all four categories on every route.** These are the Overview scores, straight from the Lighthouse report:
+
+![Lighthouse desktop report for the Overview: Performance 100, Accessibility 100, Best Practices 100, SEO 100](docs/screenshots/lighthouse-desktop.png)
+
+**Mobile: 100 for Accessibility, Best Practices and SEO, but performance is below 100 on the Overview (92):**
+
+![Lighthouse mobile report for the Overview: Performance 92, Accessibility 100, Best Practices 100, SEO 100](docs/screenshots/lighthouse-mobile.png)
 
 | Route | Form factor | Performance | Accessibility | Best Practices | SEO | LCP | CLS |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| All six routes | Desktop | 100 | 100 | 100 | 100 | 0.5 to 0.6 s | 0 |
-| Overview | Mobile | 96 | 100 | 100 | 100 | 2.4 s | 0 |
-| Transactions, Budgets, Goals, Analytics, Settings | Mobile | 93 to 95 | 100 | 100 | 100 | 2.7 to 2.9 s | 0 |
+| / (Overview) | Desktop | 100 | 100 | 100 | 100 | 0.4 s | 0 |
+| /transactions | Desktop | 100 | 100 | 100 | 100 | 0.4 s | 0 |
+| /budgets | Desktop | 100 | 100 | 100 | 100 | 0.4 s | 0 |
+| /goals | Desktop | 100 | 100 | 100 | 100 | 0.4 s | 0 |
+| /analytics | Desktop | 100 | 100 | 100 | 100 | 0.4 s | 0 |
+| /settings | Desktop | 100 | 100 | 100 | 100 | 0.4 s | 0 |
+| / (Overview) | Mobile | 92 | 100 | 100 | 100 | 3.0 s | 0 |
+| /transactions | Mobile | 99 | 100 | 100 | 100 | 1.7 s | 0 |
+| /budgets | Mobile | 99 | 100 | 100 | 100 | 1.8 s | 0 |
+| /goals | Mobile | 99 | 100 | 100 | 100 | 1.8 s | 0 |
+| /analytics | Mobile | 97 | 100 | 100 | 100 | 1.8 s | 0 |
+| /settings | Mobile | 98 | 100 | 100 | 100 | 2.1 s | 0 |
 
-**Not 100 on mobile performance.** LCP under simulated slow 4G is limited by downloading and running the main bundle (about 94 KB gzipped, mostly React, React DOM and React Router; Highcharts is a separate lazy chunk) and then the lazy route chunk. Preloading the landing route's chunks helped the Overview. Further gains would likely require a smaller router or React alternative. Scores from a local server do not include real-network or CDN behaviour, so measure the deployed site too.
+**Why mobile performance is not 100.** On simulated slow 4G, the largest paint is limited by downloading and running the main bundle (about 94 KB gzipped, mostly React, React DOM and React Router) and then the lazy route chunk. The Overview is slowest because it also mounts the charts. Highcharts itself is a separate lazy chunk, and Motion loads after first paint. Preloading the landing route's chunks already helped; getting further would likely need a smaller router or React alternative. Scores vary from run to run.
+
+**Running Lighthouse yourself.** Use an incognito window with extensions turned off and keep the tab in the foreground until it finishes. Chrome may warn that IndexedDB data can affect results; that only means the app has saved data in that browser, and the page still renders normally. A "NO_FCP" error means the browser tab was not painting during the run, for example because it was in the background or an extension interfered.
 
 ## Deployment
 
