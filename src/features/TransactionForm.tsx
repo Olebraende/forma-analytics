@@ -1,4 +1,5 @@
 import { useRef, useState, type FormEvent } from 'react'
+import { useT } from '@/i18n/useT'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { SelectField, TextField } from '@/components/ui/Field'
@@ -15,6 +16,7 @@ import styles from './forms.module.css'
 type Field = 'amount' | 'category' | 'date' | 'description'
 
 export function TransactionForm({ initial, onSave, onClose }: { initial?: Transaction; onSave: (t: Transaction) => Promise<void>; onClose: () => void }) {
+  const t = useT()
   const [type, setType] = useState<TransactionType>(initial?.type ?? 'expense')
   const [amount, setAmount] = useState(initial ? minorToInput(initial.amount) : '')
   const [categoryId, setCategoryId] = useState(initial?.categoryId ?? '')
@@ -31,11 +33,11 @@ export function TransactionForm({ initial, onSave, onClose }: { initial?: Transa
     e.preventDefault()
     const errs: Partial<Record<Field, string>> = {}
     const minor = parseAmount(amount)
-    if (minor === null) errs.amount = 'Enter an amount above zero, such as 249.90.'
-    if (!categories.some((c) => c.id === categoryId)) errs.category = 'Choose a category.'
-    if (!isValidISODate(date)) errs.date = 'Enter a valid date.'
+    if (minor === null) errs.amount = t('Enter an amount above zero, such as 249.90.')
+    if (!categories.some((c) => c.id === categoryId)) errs.category = t('Choose a category.')
+    if (!isValidISODate(date)) errs.date = t('Enter a valid date.')
     const desc = cleanText(description)
-    if (!desc) errs.description = 'Add a short description.'
+    if (!desc) errs.description = t('Add a short description.')
     setErrors(errs)
     if (Object.keys(errs).length > 0 || minor === null) {
       requestAnimationFrame(() => formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus())
@@ -56,21 +58,21 @@ export function TransactionForm({ initial, onSave, onClose }: { initial?: Transa
       })
       onClose()
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : 'Could not save.')
+      setSaveError(err instanceof Error ? err.message : t('Could not save.'))
       setSaving(false)
     }
   }
 
   return (
     <Modal
-      title={initial ? 'Edit transaction' : 'Add transaction'}
-      description="Amounts are stored in this browser only."
+      title={initial ? t('Edit transaction') : t('Add transaction')}
+      description={t('Amounts are stored in this browser only.')}
       onClose={onClose}
       footer={
         <>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>{t('Cancel')}</Button>
           <Button variant="primary" type="submit" form="tx-form" loading={saving}>
-            {initial ? 'Save changes' : 'Add transaction'}
+            {initial ? t('Save changes') : t('Add transaction')}
           </Button>
         </>
       }
@@ -78,15 +80,15 @@ export function TransactionForm({ initial, onSave, onClose }: { initial?: Transa
       <form id="tx-form" ref={formRef} onSubmit={submit} noValidate className={styles.form}>
         <div className={styles.group}>
           <span className={styles.groupLabel} id="tx-type-label">
-            Type
+            {t('Type')}
           </span>
           <Segmented
             name="tx-type"
-            label="Transaction type"
+            label={t('Transaction type')}
             value={type}
             options={[
-              { id: 'expense', label: 'Expense' },
-              { id: 'income', label: 'Income' },
+              { id: 'expense', label: t('Expense') },
+              { id: 'income', label: t('Income') },
             ]}
             onChange={(v) => {
               setType(v)
@@ -94,17 +96,17 @@ export function TransactionForm({ initial, onSave, onClose }: { initial?: Transa
             }}
           />
         </div>
-        <TextField label="Amount" inputMode="decimal" autoComplete="off" placeholder="0.00" value={amount} onChange={(e) => setAmount(e.target.value)} error={errors.amount} autoFocus />
-        <SelectField label="Category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} error={errors.category}>
-          <option value="">Select a category</option>
+        <TextField label={t('Amount')} inputMode="decimal" autoComplete="off" placeholder="0.00" value={amount} onChange={(e) => setAmount(e.target.value)} error={errors.amount} autoFocus />
+        <SelectField label={t('Category')} value={categoryId} onChange={(e) => setCategoryId(e.target.value)} error={errors.category}>
+          <option value="">{t('Select a category')}</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.name}
+              {t(c.name)}
             </option>
           ))}
         </SelectField>
-        <TextField label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} error={errors.date} />
-        <TextField label="Description" maxLength={120} autoComplete="off" value={description} onChange={(e) => setDescription(e.target.value)} error={errors.description} />
+        <TextField label={t('Date')} type="date" value={date} onChange={(e) => setDate(e.target.value)} error={errors.date} />
+        <TextField label={t('Description')} maxLength={120} autoComplete="off" value={description} onChange={(e) => setDescription(e.target.value)} error={errors.description} />
         {saveError && (
           <p role="alert" className={styles.saveError}>
             {saveError}

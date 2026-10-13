@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Sparkline } from '@/charts'
 import { useAnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { useFormat } from '@/app/prefs'
+import { useT } from '@/i18n/useT'
 import styles from './KpiCard.module.css'
 
 interface Props {
@@ -23,10 +24,11 @@ interface Props {
 
 export function KpiCard({ label, icon, value, change, upIsGood = true, footnote, signed, trend }: Props) {
   const { money } = useFormat()
+  const t = useT()
   const shown = useAnimatedNumber(value)
   let delta: ReactNode = null
   if (change !== undefined) {
-    if (change === null) delta = <span className={styles.deltaNeutral}>No earlier data</span>
+    if (change === null) delta = <span className={styles.deltaNeutral}>{t('No earlier data')}</span>
     else {
       const pct = Math.round(Math.abs(change) * 100)
       const flat = pct === 0
@@ -35,8 +37,8 @@ export function KpiCard({ label, icon, value, change, upIsGood = true, footnote,
       delta = (
         <span className={styles.delta} data-tone={good === null ? 'neutral' : good ? 'good' : 'bad'}>
           <Icon size={14} strokeWidth={2} aria-hidden="true" />
-          {flat ? 'No change' : `${change > 0 ? 'Up' : 'Down'} ${pct}%`}
-          <span className="sr-only"> compared with the previous period</span>
+          {flat ? t('No change') : t(change > 0 ? 'Up {pct}%' : 'Down {pct}%', { pct })}
+          <span className="sr-only"> {t('compared with the previous period')}</span>
         </span>
       )
     }

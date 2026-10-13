@@ -15,6 +15,7 @@ import { categoriesFor, getCategory } from '@/data/categories'
 import { budgetStatuses, budgetTotals, type BudgetStatus } from '@/finance/calc'
 import { newId, useFinance } from '@/finance/store'
 import { useFormat } from '@/app/prefs'
+import { useT } from '@/i18n/useT'
 import { useToday } from '@/hooks/useToday'
 import { addMonths, monthKey } from '@/utils/dates'
 import { minorToInput, parseAmount } from '@/utils/money'
@@ -23,6 +24,7 @@ import styles from './budgets.module.css'
 
 export default function Budgets() {
   const fin = useFinance()
+  const t = useT()
   const fmt = useFormat()
   const toast = useToast()
   const today = useToday()
@@ -37,54 +39,54 @@ export default function Budgets() {
   return (
     <>
       <PageHeader
-        title="Budgets"
-        description="Monthly spending limits by category."
+        title={t('Budgets')}
+        description={t('Monthly spending limits by category.')}
         actions={
           <Button variant="primary" icon={<Plus size={16} aria-hidden="true" />} onClick={() => setEditing('new')}>
-            Add budget
+            {t('Add budget')}
           </Button>
         }
       />
 
-      <div className={styles.monthNav} role="group" aria-label="Budget month">
-        <IconButton label="Previous month" variant="secondary" onClick={() => setMonth(addMonths(month, -1))}>
+      <div className={styles.monthNav} role="group" aria-label={t('Budget month')}>
+        <IconButton label={t('Previous month')} variant="secondary" onClick={() => setMonth(addMonths(month, -1))}>
           <ChevronLeft size={18} aria-hidden="true" />
         </IconButton>
         <h2 className={styles.monthLabel} aria-live="polite">{fmt.month(month, 'long')}</h2>
-        <IconButton label="Next month" variant="secondary" disabled={month >= thisMonth} onClick={() => setMonth(addMonths(month, 1))}>
+        <IconButton label={t('Next month')} variant="secondary" disabled={month >= thisMonth} onClick={() => setMonth(addMonths(month, 1))}>
           <ChevronRight size={18} aria-hidden="true" />
         </IconButton>
       </div>
 
       {statuses.length === 0 ? (
         <Card>
-          <EmptyState icon={<PiggyBank size={28} strokeWidth={1.5} />} title="No budgets yet" level={2} action={<Button variant="primary" onClick={() => setEditing('new')}>Create a budget</Button>}>
-            Set a monthly limit for a category to track how much is left.
+          <EmptyState icon={<PiggyBank size={28} strokeWidth={1.5} />} title={t('No budgets yet')} level={2} action={<Button variant="primary" onClick={() => setEditing('new')}>{t('Create a budget')}</Button>}>
+            {t('Set a monthly limit for a category to track how much is left.')}
           </EmptyState>
         </Card>
       ) : (
         <div className={styles.layout}>
           <Card as="section" aria-labelledby="bt" className={styles.total}>
-            <CardHeader id="bt" title="Total across budgets" />
+            <CardHeader id="bt" title={t('Total across budgets')} />
             <p className={`${styles.big} num`} data-negative={totals.remaining < 0 || undefined}>
-              {fmt.money(Math.abs(totals.remaining))} {totals.remaining < 0 ? 'over' : 'left'}
+              {fmt.money(Math.abs(totals.remaining))} {totals.remaining < 0 ? t('over') : t('left')}
             </p>
             <p className={styles.muted}>
-              <span className="num">{fmt.money(totals.spent)}</span> spent of <span className="num">{fmt.money(totals.limit)}</span>
+              <span className="num">{fmt.money(totals.spent)}</span> {t('spent of')} <span className="num">{fmt.money(totals.limit)}</span>
             </p>
-            <ProgressBar value={totals.utilization} label="Total budget used" tone={totals.utilization > 1 ? 'negative' : totals.utilization >= 0.85 ? 'warning' : 'accent'} />
-            <p className={styles.muted}>{Math.round(totals.utilization * 100)}% used</p>
+            <ProgressBar value={totals.utilization} label={t('Total budget used')} tone={totals.utilization > 1 ? 'negative' : totals.utilization >= 0.85 ? 'warning' : 'accent'} />
+            <p className={styles.muted}>{t('{pct}% used', { pct: Math.round(totals.utilization * 100) })}</p>
           </Card>
           <ChartCard
-            title="Budget versus actual"
+            title={t('Budget versus actual')}
             description={fmt.month(month, 'long')}
             table={{
-              caption: 'Budget versus actual spending by category',
-              columns: ['Category', 'Budget', 'Spent', 'Remaining'],
-              rows: statuses.map((s) => [getCategory(s.budget.categoryId).name, fmt.money(s.budget.limit), fmt.money(s.spent), fmt.money(s.remaining, { signed: true })]),
+              caption: t('Budget versus actual spending by category'),
+              columns: [t('Category'), t('Budget'), t('Spent'), t('Remaining')],
+              rows: statuses.map((s) => [t(getCategory(s.budget.categoryId).name), fmt.money(s.budget.limit), fmt.money(s.spent), fmt.money(s.remaining, { signed: true })]),
             }}
           >
-            <BarChart label="Budget versus actual by category" seriesLabels={['Budget', 'Spent']} formatValue={(v) => fmt.money(v)} data={statuses.map((s) => ({ id: s.budget.id, label: getCategory(s.budget.categoryId).name, values: [s.budget.limit, s.spent] }))} />
+            <BarChart label={t('Budget versus actual by category')} seriesLabels={[t('Budget'), t('Spent')]} formatValue={(v) => fmt.money(v)} data={statuses.map((s) => ({ id: s.budget.id, label: t(getCategory(s.budget.categoryId).name), values: [s.budget.limit, s.spent] }))} />
           </ChartCard>
           <ul className={`${styles.cards} stagger`}>
             {statuses.map((s, i) => (
@@ -103,19 +105,19 @@ export default function Budgets() {
           onClose={() => setEditing(null)}
           onSave={async (b) => {
             await fin.saveBudget(b)
-            toast.show(editing === 'new' ? 'Budget created' : 'Budget updated')
+            toast.show(editing === 'new' ? t('Budget created') : t('Budget updated'))
           }}
         />
       )}
       {deleting && (
         <ConfirmDialog
-          title="Delete budget?"
-          message={`The ${getCategory(deleting.categoryId).name} budget will be removed. Your transactions are not affected.`}
-          confirmLabel="Delete"
+          title={t('Delete budget?')}
+          message={t('The {name} budget will be removed. Your transactions are not affected.', { name: t(getCategory(deleting.categoryId).name) })}
+          confirmLabel={t('Delete')}
           onCancel={() => setDeleting(null)}
           onConfirm={async () => {
             await fin.deleteBudget(deleting.id)
-            toast.show('Budget deleted')
+            toast.show(t('Budget deleted'))
             setDeleting(null)
           }}
         />
@@ -124,33 +126,34 @@ export default function Budgets() {
   )
 
   function BudgetCard({ status, onEdit, onDelete }: { status: BudgetStatus; onEdit: () => void; onDelete: () => void }) {
-    const cat = getCategory(status.budget.categoryId)
+    const cat0 = getCategory(status.budget.categoryId)
+    const cat = { ...cat0, name: t(cat0.name) }
     const badge =
       status.state === 'over' ? (
-        <Badge tone="negative" icon={<TriangleAlert size={12} aria-hidden="true" />}>Over by {fmt.money(-status.remaining)}</Badge>
+        <Badge tone="negative" icon={<TriangleAlert size={12} aria-hidden="true" />}>{t('Over by {amount}', { amount: fmt.money(-status.remaining) })}</Badge>
       ) : status.state === 'warning' ? (
-        <Badge tone="warning" icon={<CircleAlert size={12} aria-hidden="true" />}>Near limit</Badge>
+        <Badge tone="warning" icon={<CircleAlert size={12} aria-hidden="true" />}>{t('Near limit')}</Badge>
       ) : (
-        <Badge tone="positive" icon={<CircleCheck size={12} aria-hidden="true" />}>On track</Badge>
+        <Badge tone="positive" icon={<CircleCheck size={12} aria-hidden="true" />}>{t('On track')}</Badge>
       )
     return (
-      <Card as="article" interactive aria-label={`${cat.name} budget`}>
+      <Card as="article" interactive aria-label={t('{name} budget', { name: cat.name })}>
         <div className={styles.cardTop}>
           <span className={styles.icon}><CategoryIcon categoryId={cat.id} /></span>
           <h3 className={styles.cardTitle}>{cat.name}</h3>
           <div className={styles.cardActions}>
-            <IconButton label={`Edit ${cat.name} budget`} onClick={onEdit}><Pencil size={16} aria-hidden="true" /></IconButton>
-            <IconButton label={`Delete ${cat.name} budget`} onClick={onDelete}><Trash2 size={16} aria-hidden="true" /></IconButton>
+            <IconButton label={t('Edit {name} budget', { name: cat.name })} onClick={onEdit}><Pencil size={16} aria-hidden="true" /></IconButton>
+            <IconButton label={t('Delete {name} budget', { name: cat.name })} onClick={onDelete}><Trash2 size={16} aria-hidden="true" /></IconButton>
           </div>
         </div>
         <p className={`${styles.cardBig} num`}>
-          {fmt.money(status.spent)} <span className={styles.muted}>of {fmt.money(status.budget.limit)}</span>
+          {fmt.money(status.spent)} <span className={styles.muted}>{t('of {amount}', { amount: fmt.money(status.budget.limit) })}</span>
         </p>
-        <ProgressBar value={status.utilization} label={`${cat.name} budget used`} tone={status.state === 'over' ? 'negative' : status.state === 'warning' ? 'warning' : 'accent'} />
+        <ProgressBar value={status.utilization} label={t('{name} budget used', { name: cat.name })} tone={status.state === 'over' ? 'negative' : status.state === 'warning' ? 'warning' : 'accent'} />
         <div className={styles.cardBottom}>
           {badge}
           <span className={`${styles.muted} num`}>
-            {status.remaining >= 0 ? `${fmt.money(status.remaining)} left` : `${Math.round(status.utilization * 100)}% used`}
+            {status.remaining >= 0 ? t('{amount} left', { amount: fmt.money(status.remaining) }) : t('{pct}% used', { pct: Math.round(status.utilization * 100) })}
           </span>
         </div>
       </Card>
@@ -159,6 +162,7 @@ export default function Budgets() {
 }
 
 function BudgetForm({ initial, taken, onSave, onClose }: { initial?: Budget; taken: string[]; onSave: (b: Budget) => Promise<void>; onClose: () => void }) {
+  const t = useT()
   const [categoryId, setCategoryId] = useState(initial?.categoryId ?? '')
   const [limit, setLimit] = useState(initial ? minorToInput(initial.limit) : '')
   const [errors, setErrors] = useState<{ category?: string; limit?: string }>({})
@@ -169,8 +173,8 @@ function BudgetForm({ initial, taken, onSave, onClose }: { initial?: Budget; tak
     e.preventDefault()
     const minor = parseAmount(limit)
     const errs: typeof errors = {}
-    if (!categoryId) errs.category = 'Choose a category.'
-    if (minor === null) errs.limit = 'Enter a monthly limit above zero.'
+    if (!categoryId) errs.category = t('Choose a category.')
+    if (minor === null) errs.limit = t('Enter a monthly limit above zero.')
     setErrors(errs)
     if (Object.keys(errs).length || minor === null) return
     setSaving(true)
@@ -179,27 +183,27 @@ function BudgetForm({ initial, taken, onSave, onClose }: { initial?: Budget; tak
       onClose()
     } catch {
       setSaving(false)
-      setErrors({ limit: 'Could not save. Check your browser storage and try again.' })
+      setErrors({ limit: t('Could not save. Check your browser storage and try again.') })
     }
   }
   return (
     <Modal
       size="sm"
-      title={initial ? 'Edit budget' : 'Add budget'}
+      title={initial ? t('Edit budget') : t('Add budget')}
       onClose={onClose}
       footer={
         <>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button variant="primary" type="submit" form="budget-form" loading={saving}>Save budget</Button>
+          <Button onClick={onClose}>{t('Cancel')}</Button>
+          <Button variant="primary" type="submit" form="budget-form" loading={saving}>{t('Save budget')}</Button>
         </>
       }
     >
       <form id="budget-form" onSubmit={submit} noValidate style={{ display: 'grid', gap: 'var(--space-4)' }}>
-        <SelectField label="Category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} error={errors.category} disabled={!!initial} hint={available.length === 0 ? 'Every expense category already has a budget.' : undefined}>
-          <option value="">Select a category</option>
-          {available.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+        <SelectField label={t('Category')} value={categoryId} onChange={(e) => setCategoryId(e.target.value)} error={errors.category} disabled={!!initial} hint={available.length === 0 ? t('Every expense category already has a budget.') : undefined}>
+          <option value="">{t('Select a category')}</option>
+          {available.map((c) => <option key={c.id} value={c.id}>{t(c.name)}</option>)}
         </SelectField>
-        <TextField label="Monthly limit" inputMode="decimal" placeholder="0.00" value={limit} onChange={(e) => setLimit(e.target.value)} error={errors.limit} />
+        <TextField label={t('Monthly limit')} inputMode="decimal" placeholder="0.00" value={limit} onChange={(e) => setLimit(e.target.value)} error={errors.limit} />
       </form>
     </Modal>
   )

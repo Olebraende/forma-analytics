@@ -11,6 +11,7 @@ import { ChartCard } from '@/charts/ChartCard'
 import { DonutChart, FinancialTrendChart } from '@/charts'
 import { useFinance } from '@/finance/store'
 import { useFormat } from '@/app/prefs'
+import { useT } from '@/i18n/useT'
 import { useToday } from '@/hooks/useToday'
 import {
   budgetStatuses, budgetTotals, categoryTotals, changeRatio, filterByRange, generateInsights, goalProgress, monthlySeries,
@@ -24,6 +25,7 @@ import styles from './routes.module.css'
 export default function Overview() {
   const fin = useFinance()
   const fmt = useFormat()
+  const t = useT()
   const today = useToday()
   const [period, setPeriod] = useState<Period>('3m')
 
@@ -47,31 +49,31 @@ export default function Overview() {
       categories: categoryTotals(current),
       recent: [...current].sort(sortByDateDesc).slice(0, 7),
       insights: generateInsights({
-        current, previous, budgets, goals, categoryName: (id) => getCategory(id).name, money: (m) => fmt.money(m),
+        current, previous, budgets, goals, categoryName: (id) => t(getCategory(id).name), money: (m) => fmt.money(m), t,
       }),
     }
-  }, [fin.transactions, fin.budgets, fin.goals, period, today, fmt])
+  }, [fin.transactions, fin.budgets, fin.goals, period, today, fmt, t])
 
   if (fin.status === 'loading') return <OverviewSkeleton />
 
   if (fin.transactions.length === 0)
     return (
       <>
-        <PageHeader title="Overview" />
+        <PageHeader title={t('Overview')} />
         <Card>
           <EmptyState
             icon={<Wallet size={28} strokeWidth={1.5} />}
-            title="Nothing to show yet" level={2}
+            title={t('Nothing to show yet')} level={2}
             action={
               <div className={styles.row}>
                 <Link to="/transactions?new=1">
-                  <Button variant="primary" icon={<Plus size={16} aria-hidden="true" />}>Add a transaction</Button>
+                  <Button variant="primary" icon={<Plus size={16} aria-hidden="true" />}>{t('Add a transaction')}</Button>
                 </Link>
-                <Button onClick={() => void fin.loadDemo()}>Load demo data</Button>
+                <Button onClick={() => void fin.loadDemo()}>{t('Load demo data')}</Button>
               </div>
             }
           >
-            Add your first transaction or explore with fictional demo data. Everything stays in this browser.
+            {t('Add your first transaction or explore with fictional demo data. Everything stays in this browser.')}
           </EmptyState>
         </Card>
       </>
@@ -83,68 +85,68 @@ export default function Overview() {
   // The current month is incomplete, so it would falsely look like a collapse in the trend line.
   const completeMonths = view.series.filter((p) => p.month < monthKey(today))
   const trendOf = (pick: (p: (typeof view.series)[number]) => number) => (completeMonths.length > 1 ? completeMonths : view.series).map(pick)
-  const periodLabel = PERIODS.find((p) => p.id === period)?.label ?? ''
+  const periodLabel = t(PERIODS.find((p) => p.id === period)?.label ?? '')
 
   return (
     <>
       <PageHeader
-        title="Overview"
-        description="A snapshot of your income, spending and progress."
-        actions={<Segmented name="period" label="Reporting period" value={period} onChange={setPeriod} options={PERIODS.map((p) => ({ id: p.id, label: p.label }))} />}
+        title={t('Overview')}
+        description={t('A snapshot of your income, spending and progress.')}
+        actions={<Segmented name="period" label={t('Reporting period')} value={period} onChange={setPeriod} options={PERIODS.map((p) => ({ id: p.id, label: t(p.label) }))} />}
       />
 
       <section aria-labelledby="kpi-heading" className={`${styles.kpis} stagger`}>
         <h2 id="kpi-heading" className="sr-only">
-          Key figures, {periodLabel}
+          {t('Key figures, {period}', { period: periodLabel })}
         </h2>
         <div style={{ '--i': 0 } as React.CSSProperties}>
-          <KpiCard label="Total income" trend={trendOf((p) => p.income)} icon={<ArrowDownToLine size={16} strokeWidth={1.75} />} value={sum.income} change={changeRatio(sum.income, prev.income)} />
+          <KpiCard label={t('Total income')} trend={trendOf((p) => p.income)} icon={<ArrowDownToLine size={16} strokeWidth={1.75} />} value={sum.income} change={changeRatio(sum.income, prev.income)} />
         </div>
         <div style={{ '--i': 1 } as React.CSSProperties}>
-          <KpiCard label="Total expenses" trend={trendOf((p) => p.expenses)} icon={<ArrowUpFromLine size={16} strokeWidth={1.75} />} value={sum.expenses} change={changeRatio(sum.expenses, prev.expenses)} upIsGood={false} />
+          <KpiCard label={t('Total expenses')} trend={trendOf((p) => p.expenses)} icon={<ArrowUpFromLine size={16} strokeWidth={1.75} />} value={sum.expenses} change={changeRatio(sum.expenses, prev.expenses)} upIsGood={false} />
         </div>
         <div style={{ '--i': 2 } as React.CSSProperties}>
-          <KpiCard label="Net cash flow" trend={trendOf((p) => p.net)} icon={<TrendingUp size={16} strokeWidth={1.75} />} value={sum.net} signed change={changeRatio(sum.net, prev.net)} footnote={sum.income > 0 ? `${Math.round(sum.savingsRate * 100)}% of income kept` : undefined} />
+          <KpiCard label={t('Net cash flow')} trend={trendOf((p) => p.net)} icon={<TrendingUp size={16} strokeWidth={1.75} />} value={sum.net} signed change={changeRatio(sum.net, prev.net)} footnote={sum.income > 0 ? t('{pct}% of income kept', { pct: Math.round(sum.savingsRate * 100) }) : undefined} />
         </div>
         <div style={{ '--i': 3 } as React.CSSProperties}>
-          <KpiCard label="Budget remaining" icon={<PiggyBank size={16} strokeWidth={1.75} />} value={view.budgetTotal.remaining} signed={view.budgetTotal.remaining < 0} footnote={fin.budgets.length ? `${fmt.month(view.budgetMonth, 'long')}` : 'No budgets set'} />
+          <KpiCard label={t('Budget remaining')} icon={<PiggyBank size={16} strokeWidth={1.75} />} value={view.budgetTotal.remaining} signed={view.budgetTotal.remaining < 0} footnote={fin.budgets.length ? fmt.month(view.budgetMonth, 'long') : t('No budgets set')} />
         </div>
         <div style={{ '--i': 4 } as React.CSSProperties}>
-          <KpiCard label="Savings progress" icon={<Target size={16} strokeWidth={1.75} />} value={view.savings.saved} footnote={view.savings.target ? `${Math.round(view.savings.progress * 100)}% of ${fmt.compact(view.savings.target)}` : 'No goals yet'} />
+          <KpiCard label={t('Savings progress')} icon={<Target size={16} strokeWidth={1.75} />} value={view.savings.saved} footnote={view.savings.target ? t('{pct}% of {target}', { pct: Math.round(view.savings.progress * 100), target: fmt.compact(view.savings.target) }) : t('No goals yet')} />
         </div>
       </section>
 
       <div className={`${styles.grid} stagger`}>
         <div className={styles.wide} style={{ '--i': 5 } as React.CSSProperties}>
           <ChartCard
-            title="Income and expenses"
-            description="Monthly totals with net cash flow"
-            summary={peak ? `Spending peaked in ${fmt.month(peak.month, 'long')} at ${fmt.money(peak.expenses)}.` : undefined}
+            title={t('Income and expenses')}
+            description={t('Monthly totals with net cash flow')}
+            summary={peak ? t('Spending peaked in {month} at {amount}.', { month: fmt.month(peak.month, 'long'), amount: fmt.money(peak.expenses) }) : undefined}
             table={{
-              caption: 'Monthly income, expenses and net cash flow',
-              columns: ['Month', 'Income', 'Expenses', 'Net'],
+              caption: t('Monthly income, expenses and net cash flow'),
+              columns: [t('Month'), t('Income'), t('Expenses'), t('Net')],
               rows: view.series.map((p) => [fmt.month(p.month, 'long'), fmt.money(p.income), fmt.money(p.expenses), fmt.money(p.net, { signed: true })]),
             }}
           >
-            <FinancialTrendChart points={trend} formatValue={(v) => fmt.money(v)} formatTick={fmt.compact} label="Monthly income, expenses and net cash flow" summary={peak ? `Spending peaked in ${fmt.month(peak.month, 'long')}.` : undefined} />
+            <FinancialTrendChart points={trend} formatValue={(v) => fmt.money(v)} formatTick={fmt.compact} label={t('Monthly income, expenses and net cash flow')} summary={peak ? t('Spending peaked in {month}.', { month: fmt.month(peak.month, 'long') }) : undefined} />
           </ChartCard>
         </div>
         <div style={{ '--i': 6 } as React.CSSProperties}>
           <ChartCard
-            title="Where money goes"
+            title={t('Where money goes')}
             description={periodLabel}
-            table={{ caption: 'Expenses by category', columns: ['Category', 'Amount', 'Share'], rows: view.categories.map((c) => [getCategory(c.categoryId).name, fmt.money(c.total), `${Math.round((c.total / (sum.expenses || 1)) * 100)}%`]) }}
+            table={{ caption: t('Expenses by category'), columns: [t('Category'), t('Amount'), t('Share')], rows: view.categories.map((c) => [t(getCategory(c.categoryId).name), fmt.money(c.total), `${Math.round((c.total / (sum.expenses || 1)) * 100)}%`]) }}
           >
             {view.categories.length ? (
-              <DonutChart label="Expenses by category" centerLabel="spent" formatValue={(v) => fmt.money(v)} data={view.categories.map((c) => ({ id: c.categoryId, label: getCategory(c.categoryId).name, value: c.total }))} />
+              <DonutChart label={t('Expenses by category')} centerLabel={t('spent')} formatValue={(v) => fmt.money(v)} data={view.categories.map((c) => ({ id: c.categoryId, label: t(getCategory(c.categoryId).name), value: c.total }))} />
             ) : (
-              <EmptyState icon={<Wallet size={24} />} title="No expenses in this period" />
+              <EmptyState icon={<Wallet size={24} />} title={t('No expenses in this period')} />
             )}
           </ChartCard>
         </div>
         <div style={{ '--i': 7 } as React.CSSProperties}>
           <Card as="section" aria-labelledby="insights-title">
-            <CardHeader id="insights-title" title="Insights" description="Generated from your data" />
+            <CardHeader id="insights-title" title={t('Insights')} description={t('Generated from your data')} />
             {view.insights.length ? (
               <ul className={styles.insights}>
                 {view.insights.map((i) => (
@@ -158,36 +160,36 @@ export default function Overview() {
                 ))}
               </ul>
             ) : (
-              <p className={styles.muted}>Insights appear once there is income and spending in the selected period.</p>
+              <p className={styles.muted}>{t('Insights appear once there is income and spending in the selected period.')}</p>
             )}
           </Card>
         </div>
         <div className={styles.wide} style={{ '--i': 8 } as React.CSSProperties}>
           <Card as="section" aria-labelledby="recent-title">
-            <CardHeader id="recent-title" title="Recent transactions" action={<Link to="/transactions">View all</Link>} />
+            <CardHeader id="recent-title" title={t('Recent transactions')} action={<Link to="/transactions">{t('View all')}</Link>} />
             {view.recent.length ? (
               <ul className={styles.recent}>
-                {view.recent.map((t) => (
-                  <li key={t.id} className={styles.recentItem}>
+                {view.recent.map((tx) => (
+                  <li key={tx.id} className={styles.recentItem}>
                     <span className={styles.catIcon}>
-                      <CategoryIcon categoryId={t.categoryId} />
+                      <CategoryIcon categoryId={tx.categoryId} />
                     </span>
                     <div className={styles.recentText}>
-                      <p className={styles.recentTitle}>{t.description}</p>
+                      <p className={styles.recentTitle}>{tx.description}</p>
                       <p className={styles.muted}>
-                        {getCategory(t.categoryId).name} · {fmt.date(t.date)}
+                        {t(getCategory(tx.categoryId).name)} · {fmt.date(tx.date)}
                       </p>
                     </div>
-                    <span className={`num ${styles.amount}`} data-type={t.type}>
-                      {t.type === 'income' ? '+' : '−'}
-                      {fmt.money(t.amount)}
-                      <span className="sr-only">{t.type === 'income' ? ' income' : ' expense'}</span>
+                    <span className={`num ${styles.amount}`} data-type={tx.type}>
+                      {tx.type === 'income' ? '+' : '−'}
+                      {fmt.money(tx.amount)}
+                      <span className="sr-only">{tx.type === 'income' ? ' ' + t('income') : ' ' + t('expense')}</span>
                     </span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className={styles.muted}>No transactions in this period.</p>
+              <p className={styles.muted}>{t('No transactions in this period.')}</p>
             )}
           </Card>
         </div>
@@ -197,8 +199,9 @@ export default function Overview() {
 }
 
 function OverviewSkeleton() {
+  const t = useT()
   return (
-    <div role="status" aria-label="Loading overview">
+    <div role="status" aria-label={t('Loading overview')}>
       <Skeleton height="2.25rem" width="12rem" />
       <div className={styles.kpis} style={{ marginTop: 'var(--space-6)' }}>
         {[0, 1, 2, 3, 4].map((i) => (

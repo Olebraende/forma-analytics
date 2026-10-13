@@ -1,4 +1,5 @@
 import type { Budget, DateRange, Minor, Period, SavingsGoal, Transaction } from '@/types/models'
+import { translate, type TFunction } from '@/i18n'
 import { addMonths, daysBetween, monthEnd, monthKey, monthStart, monthsBetween, toISO } from '@/utils/dates'
 
 /* ---------- Periods ---------- */
@@ -202,9 +203,11 @@ export interface InsightContext {
   goals: GoalProgress[]
   categoryName: (id: string) => string
   money: (minor: Minor) => string
+  t?: TFunction
 }
 
 export function generateInsights(ctx: InsightContext): Insight[] {
+  const t: TFunction = ctx.t ?? ((text, vars) => translate('en', text, vars))
   const out: Insight[] = []
   const cur = summarize(ctx.current)
   const prev = summarize(ctx.previous)
@@ -215,15 +218,15 @@ export function generateInsights(ctx: InsightContext): Insight[] {
       out.push({
         id: 'savings-rate',
         tone: pct >= 20 ? 'positive' : 'neutral',
-        title: `You kept ${pct}% of your income`,
-        body: `Net cash flow is ${ctx.money(cur.net)} for this period.`,
+        title: t('You kept {pct}% of your income', { pct }),
+        body: t('Net cash flow is {amount} for this period.', { amount: ctx.money(cur.net) }),
       })
     } else {
       out.push({
         id: 'negative-flow',
         tone: 'warning',
-        title: 'Spending exceeded income',
-        body: `Expenses were ${ctx.money(-cur.net)} higher than income in this period.`,
+        title: t('Spending exceeded income'),
+        body: t('Expenses were {amount} higher than income in this period.', { amount: ctx.money(-cur.net) }),
       })
     }
   }
@@ -234,8 +237,8 @@ export function generateInsights(ctx: InsightContext): Insight[] {
     out.push({
       id: 'expense-change',
       tone: change > 0 ? 'warning' : 'positive',
-      title: change > 0 ? `Spending is up ${pct}%` : `Spending is down ${pct}%`,
-      body: `Compared with the previous period (${ctx.money(prev.expenses)}).`,
+      title: change > 0 ? t('Spending is up {pct}%', { pct }) : t('Spending is down {pct}%', { pct }),
+      body: t('Compared with the previous period ({amount}).', { amount: ctx.money(prev.expenses) }),
     })
   }
 
@@ -244,8 +247,8 @@ export function generateInsights(ctx: InsightContext): Insight[] {
     out.push({
       id: 'top-category',
       tone: 'neutral',
-      title: `${ctx.categoryName(top.categoryId)} is your largest expense`,
-      body: `${ctx.money(top.total)}, ${Math.round((top.total / cur.expenses) * 100)}% of all spending.`,
+      title: t('{name} is your largest expense', { name: ctx.categoryName(top.categoryId) }),
+      body: t('{amount}, {pct}% of all spending.', { amount: ctx.money(top.total), pct: Math.round((top.total / cur.expenses) * 100) }),
     })
   }
 
@@ -254,15 +257,15 @@ export function generateInsights(ctx: InsightContext): Insight[] {
     out.push({
       id: 'budget-over',
       tone: 'warning',
-      title: over.length === 1 ? '1 budget is overspent' : `${over.length} budgets are overspent`,
+      title: over.length === 1 ? t('1 budget is overspent') : t('{n} budgets are overspent', { n: over.length }),
       body: over.map((b) => ctx.categoryName(b.budget.categoryId)).join(', ') + '.',
     })
   } else if (ctx.budgets.length > 0 && ctx.budgets.every((b) => b.state === 'ok')) {
     out.push({
       id: 'budget-ok',
       tone: 'positive',
-      title: 'All budgets are on track',
-      body: 'No category has reached its warning threshold this month.',
+      title: t('All budgets are on track'),
+      body: t('No category has reached its warning threshold this month.'),
     })
   }
 
@@ -271,8 +274,8 @@ export function generateInsights(ctx: InsightContext): Insight[] {
     out.push({
       id: 'goal-near',
       tone: 'positive',
-      title: `${nearly.goal.name} is almost there`,
-      body: `${ctx.money(nearly.remaining)} left to reach the target.`,
+      title: t('{name} is almost there', { name: nearly.goal.name }),
+      body: t('{amount} left to reach the target.', { amount: ctx.money(nearly.remaining) }),
     })
   }
   return out.slice(0, 5)

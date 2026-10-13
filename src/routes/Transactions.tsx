@@ -13,6 +13,7 @@ import { TransactionForm } from '@/features/TransactionForm'
 import { CATEGORIES, getCategory } from '@/data/categories'
 import { useFinance } from '@/finance/store'
 import { useFormat } from '@/app/prefs'
+import { useT } from '@/i18n/useT'
 import { summarize } from '@/finance/calc'
 import type { Transaction } from '@/types/models'
 import styles from './transactions.module.css'
@@ -30,6 +31,7 @@ const SORTERS: Record<Sort, (a: Transaction, b: Transaction) => number> = {
 export default function Transactions() {
   const fin = useFinance()
   const fmt = useFormat()
+  const t = useT()
   const toast = useToast()
   const [params, setParams] = useSearchParams()
   const [query, setQuery] = useState('')
@@ -54,11 +56,11 @@ export default function Transactions() {
   const filtered = useMemo(() => {
     const q = deferred.trim().toLowerCase()
     return fin.transactions
-      .filter((t) => (type === 'all' || t.type === type) && (category === 'all' || t.categoryId === category))
-      .filter((t) => (!from || t.date >= from) && (!to || t.date <= to))
-      .filter((t) => !q || t.description.toLowerCase().includes(q) || getCategory(t.categoryId).name.toLowerCase().includes(q))
+      .filter((x) => (type === 'all' || x.type === type) && (category === 'all' || x.categoryId === category))
+      .filter((x) => (!from || x.date >= from) && (!to || x.date <= to))
+      .filter((x) => !q || x.description.toLowerCase().includes(q) || getCategory(x.categoryId).name.toLowerCase().includes(q) || t(getCategory(x.categoryId).name).toLowerCase().includes(q))
       .sort(SORTERS[sort])
-  }, [fin.transactions, deferred, type, category, from, to, sort])
+  }, [fin.transactions, deferred, type, category, from, to, sort, t])
 
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const current = Math.min(page, pages)
@@ -73,50 +75,50 @@ export default function Transactions() {
   return (
     <>
       <PageHeader
-        title="Transactions"
-        description="Record, search and review every movement of money."
+        title={t('Transactions')}
+        description={t('Record, search and review every movement of money.')}
         actions={
           <Button variant="primary" icon={<Plus size={16} aria-hidden="true" />} onClick={() => setEditing('new')}>
-            Add transaction
+            {t('Add transaction')}
           </Button>
         }
       />
 
-      <Card className={styles.filters} as="section" aria-label="Filters">
+      <Card className={styles.filters} as="section" aria-label={t('Filters')}>
         <div className={styles.search}>
-          <TextField label="Search" type="search" placeholder="Description or category" value={query} onChange={(e) => reset(setQuery)(e.target.value)} />
+          <TextField label={t('Search')} type="search" placeholder={t('Description or category')} value={query} onChange={(e) => reset(setQuery)(e.target.value)} />
           <Search size={16} aria-hidden="true" className={styles.searchIcon} />
         </div>
-        <SelectField label="Type" value={type} onChange={(e) => reset(setType)(e.target.value as typeof type)}>
-          <option value="all">All types</option>
-          <option value="income">Income</option>
-          <option value="expense">Expenses</option>
+        <SelectField label={t('Type')} value={type} onChange={(e) => reset(setType)(e.target.value as typeof type)}>
+          <option value="all">{t('All types')}</option>
+          <option value="income">{t('Income')}</option>
+          <option value="expense">{t('Expenses')}</option>
         </SelectField>
-        <SelectField label="Category" value={category} onChange={(e) => reset(setCategory)(e.target.value)}>
-          <option value="all">All categories</option>
+        <SelectField label={t('Category')} value={category} onChange={(e) => reset(setCategory)(e.target.value)}>
+          <option value="all">{t('All categories')}</option>
           {CATEGORIES.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.name}
+              {t(c.name)}
             </option>
           ))}
         </SelectField>
-        <TextField label="From" type="date" value={from} onChange={(e) => reset(setFrom)(e.target.value)} />
-        <TextField label="To" type="date" value={to} onChange={(e) => reset(setTo)(e.target.value)} />
-        <SelectField label="Sort by" value={sort} onChange={(e) => reset(setSort)(e.target.value as Sort)}>
-          <option value="date-desc">Newest first</option>
-          <option value="date-asc">Oldest first</option>
-          <option value="amount-desc">Largest amount</option>
-          <option value="amount-asc">Smallest amount</option>
+        <TextField label={t('From')} type="date" value={from} onChange={(e) => reset(setFrom)(e.target.value)} />
+        <TextField label={t('To')} type="date" value={to} onChange={(e) => reset(setTo)(e.target.value)} />
+        <SelectField label={t('Sort by')} value={sort} onChange={(e) => reset(setSort)(e.target.value as Sort)}>
+          <option value="date-desc">{t('Newest first')}</option>
+          <option value="date-asc">{t('Oldest first')}</option>
+          <option value="amount-desc">{t('Largest amount')}</option>
+          <option value="amount-asc">{t('Smallest amount')}</option>
         </SelectField>
       </Card>
 
-      <Card className={styles.tableCard} as="section" aria-label="Transaction list">
+      <Card className={styles.tableCard} as="section" aria-label={t('Transaction list')}>
         {fin.status === 'loading' ? (
-          <p className={styles.status} role="status">Loading transactions</p>
+          <p className={styles.status} role="status">{t('Loading transactions')}</p>
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={<ReceiptText size={28} strokeWidth={1.5} />}
-            title={filtersActive ? 'No matching transactions' : 'No transactions yet'} level={2}
+            title={filtersActive ? t('No matching transactions') : t('No transactions yet')} level={2}
             action={
               filtersActive ? (
                 <Button
@@ -124,54 +126,54 @@ export default function Transactions() {
                     setQuery(''); setType('all'); setCategory('all'); setFrom(''); setTo(''); setPage(1)
                   }}
                 >
-                  Clear filters
+                  {t('Clear filters')}
                 </Button>
               ) : (
                 <Button variant="primary" icon={<Plus size={16} aria-hidden="true" />} onClick={() => setEditing('new')}>
-                  Add your first transaction
+                  {t('Add your first transaction')}
                 </Button>
               )
             }
           >
-            {filtersActive ? 'Try a different search or widen the date range.' : 'Add income and expenses to see them here.'}
+            {filtersActive ? t('Try a different search or widen the date range.') : t('Add income and expenses to see them here.')}
           </EmptyState>
         ) : (
           <>
             <p className={styles.summary} role="status">
-              {filtered.length} {filtered.length === 1 ? 'transaction' : 'transactions'} · income <span className="num">{fmt.money(totals.income)}</span> · expenses <span className="num">{fmt.money(totals.expenses)}</span>
+              {t(filtered.length === 1 ? '{n} transaction' : '{n} transactions', { n: filtered.length })} · {t('income')} <span className="num">{fmt.money(totals.income)}</span> · {t('expenses')} <span className="num">{fmt.money(totals.expenses)}</span>
             </p>
             <table className={styles.table}>
-              <caption className="sr-only">Transactions, page {current} of {pages}</caption>
+              <caption className="sr-only">{t('Transactions, page {current} of {pages}', { current, pages })}</caption>
               <thead>
                 <tr>
-                  <th scope="col">Description</th>
-                  <th scope="col">Category</th>
-                  <th scope="col">Date</th>
-                  <th scope="col" className={styles.right}>Amount</th>
-                  <th scope="col"><span className="sr-only">Actions</span></th>
+                  <th scope="col">{t('Description')}</th>
+                  <th scope="col">{t('Category')}</th>
+                  <th scope="col">{t('Date')}</th>
+                  <th scope="col" className={styles.right}>{t('Amount')}</th>
+                  <th scope="col"><span className="sr-only">{t('Actions')}</span></th>
                 </tr>
               </thead>
               <tbody>
-                {rows.map((t) => (
-                  <tr key={t.id}>
-                    <td data-label="Description" className={styles.desc}>
-                      <span className={styles.catIcon}><CategoryIcon categoryId={t.categoryId} /></span>
+                {rows.map((tx) => (
+                  <tr key={tx.id}>
+                    <td data-label={t('Description')} className={styles.desc}>
+                      <span className={styles.catIcon}><CategoryIcon categoryId={tx.categoryId} /></span>
                       <span className={styles.descText}>
-                        {t.description}
-                        {t.source === 'demo' && <Badge>Demo</Badge>}
+                        {tx.description}
+                        {tx.source === 'demo' && <Badge>{t('Demo')}</Badge>}
                       </span>
                     </td>
-                    <td data-label="Category">{getCategory(t.categoryId).name}</td>
-                    <td data-label="Date" className="num">{fmt.date(t.date)}</td>
-                    <td data-label="Amount" className={`${styles.right} ${styles.amount} num`} data-type={t.type}>
-                      {t.type === 'income' ? '+' : '−'}{fmt.money(t.amount)}
-                      <span className="sr-only">{t.type === 'income' ? ' income' : ' expense'}</span>
+                    <td data-label={t('Category')}>{t(getCategory(tx.categoryId).name)}</td>
+                    <td data-label={t('Date')} className="num">{fmt.date(tx.date)}</td>
+                    <td data-label={t('Amount')} className={`${styles.right} ${styles.amount} num`} data-type={tx.type}>
+                      {tx.type === 'income' ? '+' : '−'}{fmt.money(tx.amount)}
+                      <span className="sr-only">{tx.type === 'income' ? ' ' + t('income') : ' ' + t('expense')}</span>
                     </td>
                     <td className={styles.actions}>
-                      <IconButton label={`Edit ${t.description}`} onClick={() => setEditing(t)}>
+                      <IconButton label={t('Edit {name}', { name: tx.description })} onClick={() => setEditing(tx)}>
                         <Pencil size={16} strokeWidth={1.75} aria-hidden="true" />
                       </IconButton>
-                      <IconButton label={`Delete ${t.description}`} onClick={() => setDeleting(t)}>
+                      <IconButton label={t('Delete {name}', { name: tx.description })} onClick={() => setDeleting(tx)}>
                         <Trash2 size={16} strokeWidth={1.75} aria-hidden="true" />
                       </IconButton>
                     </td>
@@ -180,12 +182,12 @@ export default function Transactions() {
               </tbody>
             </table>
             {pages > 1 && (
-              <nav className={styles.pager} aria-label="Pagination">
-                <IconButton label="Previous page" variant="secondary" disabled={current === 1} onClick={() => setPage(current - 1)}>
+              <nav className={styles.pager} aria-label={t('Pagination')}>
+                <IconButton label={t('Previous page')} variant="secondary" disabled={current === 1} onClick={() => setPage(current - 1)}>
                   <ChevronLeft size={18} aria-hidden="true" />
                 </IconButton>
-                <span className="num">Page {current} of {pages}</span>
-                <IconButton label="Next page" variant="secondary" disabled={current === pages} onClick={() => setPage(current + 1)}>
+                <span className="num">{t('Page {current} of {pages}', { current, pages })}</span>
+                <IconButton label={t('Next page')} variant="secondary" disabled={current === pages} onClick={() => setPage(current + 1)}>
                   <ChevronRight size={18} aria-hidden="true" />
                 </IconButton>
               </nav>
@@ -198,24 +200,24 @@ export default function Transactions() {
         <TransactionForm
           initial={editing === 'new' ? undefined : editing}
           onClose={() => setEditing(null)}
-          onSave={async (t) => {
-            await fin.saveTransaction(t)
-            toast.show(editing === 'new' ? 'Transaction added' : 'Transaction updated')
+          onSave={async (saved) => {
+            await fin.saveTransaction(saved)
+            toast.show(editing === 'new' ? t('Transaction added') : t('Transaction updated'))
           }}
         />
       )}
       {deleting && (
         <ConfirmDialog
-          title="Delete transaction?"
-          message={`"${deleting.description}" for ${fmt.money(deleting.amount)} will be removed. This cannot be undone.`}
-          confirmLabel="Delete"
+          title={t('Delete transaction?')}
+          message={t('"{name}" for {amount} will be removed. This cannot be undone.', { name: deleting.description, amount: fmt.money(deleting.amount) })}
+          confirmLabel={t('Delete')}
           onCancel={() => setDeleting(null)}
           onConfirm={async () => {
             try {
               await fin.deleteTransaction(deleting.id)
-              toast.show('Transaction deleted')
+              toast.show(t('Transaction deleted'))
             } catch (e) {
-              toast.show(e instanceof Error ? e.message : 'Could not delete', 'error')
+              toast.show(e instanceof Error ? e.message : t('Could not delete'), 'error')
             }
             setDeleting(null)
           }}
