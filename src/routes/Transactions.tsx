@@ -10,6 +10,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/components/ui/Toast'
 import { CategoryIcon } from '@/components/ui/CategoryIcon'
 import { TransactionForm } from '@/features/TransactionForm'
+import { PayslipImport } from '@/features/PayslipImport'
 import { CATEGORIES, getCategory } from '@/data/categories'
 import { useFinance } from '@/finance/store'
 import { useFormat } from '@/app/prefs'
@@ -78,9 +79,12 @@ export default function Transactions() {
         title={t('Transactions')}
         description={t('Record, search and review every movement of money.')}
         actions={
-          <Button variant="primary" icon={<Plus size={16} aria-hidden="true" />} onClick={() => setEditing('new')}>
-            {t('Add transaction')}
-          </Button>
+          <>
+            <PayslipImport />
+            <Button variant="primary" icon={<Plus size={16} aria-hidden="true" />} onClick={() => setEditing('new')}>
+              {t('Add transaction')}
+            </Button>
+          </>
         }
       />
 

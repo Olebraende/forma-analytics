@@ -21,6 +21,7 @@
     "highcharts": "^13.1.1",
     "lucide-react": "^1.53.0",
     "motion": "^14.0.0",
+    "pdfjs-dist": "^6.4.299",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router-dom": "^7.18.4"

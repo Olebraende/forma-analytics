@@ -274,3 +274,49 @@ test('report is reachable from analytics and settings', async ({ page }) => {
   await page.getByRole('button', { name: 'Report (print or PDF)' }).click()
   await expect(page).toHaveURL(/#\/report$/)
 })
+
+const PAYSLIP_HTML = `<!doctype html><meta charset="utf-8"><body style="font-family:Arial;font-size:14px">
+<h2>Lønnsslipp</h2>
+<table style="border-collapse:collapse;width:100%">
+<tr><td>Arbeidsgiver</td><td>Fjord Konsulent AS</td></tr>
+<tr><td>Utbetalingsdato</td><td>25.10.2026</td></tr>
+<tr><td>Lønnsperiode</td><td>01.10.2026 - 31.10.2026</td></tr>
+<tr><td>Fastlønn</td><td>52 000,00</td></tr>
+<tr><td>Bruttolønn</td><td>52 000,00</td><td>468 000,00</td></tr>
+<tr><td>Skattetrekk</td><td>-14 560,00</td><td>-131 040,00</td></tr>
+<tr><td>Netto utbetalt</td><td>37 440,00</td></tr>
+</table></body>`
+
+test('a payslip PDF is read locally, reviewed and saved as income', async ({ page, browser }) => {
+  const external: string[] = []
+  page.on('request', (r) => {
+    const u = new URL(r.url())
+    if (!['localhost', '127.0.0.1'].includes(u.hostname) && u.protocol.startsWith('http')) external.push(r.url())
+  })
+  const helper = await browser.newPage()
+  await helper.setContent(PAYSLIP_HTML)
+  const pdf = await helper.pdf({ format: 'A4' })
+  await helper.close()
+
+  await page.goto('#/transactions')
+  await page.getByLabel('Choose a payslip PDF').setInputFiles({ name: 'lonn.pdf', mimeType: 'application/pdf', buffer: pdf })
+  const dialog = page.getByRole('dialog', { name: 'Review payslip' })
+  await expect(dialog).toBeVisible({ timeout: 15000 })
+  await expect(dialog.getByLabel('Amount to record as income')).toHaveValue('37440')
+  await expect(dialog.getByLabel('Date')).toHaveValue('2026-10-25')
+  await expect(dialog.getByLabel('Description')).toHaveValue('Salary Fjord Konsulent AS')
+  await expect(dialog.getByText('Fjord Konsulent AS').first()).toBeVisible()
+  const results = await new AxeBuilder({ page }).include('dialog').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()
+  expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).slice(0, 2).join(' | ')}`)).toEqual([])
+  await dialog.getByRole('button', { name: 'Add as income' }).click()
+  await expect(dialog).toBeHidden()
+  await page.getByLabel('Search').fill('Fjord Konsulent')
+  await expect(page.getByRole('row', { name: /Salary Fjord Konsulent AS/ })).toBeVisible()
+  expect(external).toEqual([])
+})
+
+test('a file that is not a PDF is rejected with a message', async ({ page }) => {
+  await page.goto('#/transactions')
+  await page.getByLabel('Choose a payslip PDF').setInputFiles({ name: 'x.pdf', mimeType: 'application/pdf', buffer: Buffer.from('hello world') })
+  await expect(page.getByRole('alert').filter({ hasText: 'not a PDF' })).toBeVisible()
+})
