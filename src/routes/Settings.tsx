@@ -1,5 +1,6 @@
 import { useRef, useState, type ReactNode } from 'react'
-import { Database, Download, FileDown, FileUp, Info, Palette, RotateCcw, ShieldCheck, Trash2, TriangleAlert } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Database, Download, FileDown, FileText, FileUp, Info, Palette, RotateCcw, ShieldCheck, Trash2, TriangleAlert } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -25,6 +26,7 @@ type Confirm = 'remove-demo' | 'reset-demo' | 'clear-all' | null
 export default function Settings() {
   const { prefs, update, theme } = usePrefs()
   const t = useT()
+  const navigate = useNavigate()
   const fin = useFinance()
   const toast = useToast()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -115,6 +117,7 @@ export default function Settings() {
           <div className={styles.actions}>
             <Button icon={<Download size={16} aria-hidden="true" />} onClick={exportJson}>{t('Download backup (JSON)')}</Button>
             <Button icon={<FileDown size={16} aria-hidden="true" />} onClick={exportCsv} disabled={fin.transactions.length === 0}>{t('Export transactions (CSV)')}</Button>
+            <Button icon={<FileText size={16} aria-hidden="true" />} onClick={() => navigate('/report')}>{t('Report (print or PDF)')}</Button>
             <Button icon={<FileUp size={16} aria-hidden="true" />} onClick={() => fileRef.current?.click()}>{t('Import backup')}</Button>
             <input ref={fileRef} type="file" accept="application/json,.json" className="sr-only" tabIndex={-1} aria-label={t('Choose a backup file to import')} onChange={(e) => { void onFile(e.target.files?.[0]); e.target.value = '' }} />
           </div>

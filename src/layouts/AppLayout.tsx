@@ -69,7 +69,7 @@ export function AppLayout() {
       <Sidebar footnote={footnote} />
       <MobileNav open={navOpen} onClose={() => setNavOpen(false)} footnote={footnote} />
       <div className={styles.column}>
-        <header className={styles.header}>
+        <header className={styles.header} data-print="hide">
           <div className={styles.headerLeft}>
             <IconButton label={t('Open navigation menu')} className={styles.menuButton} onClick={() => setNavOpen(true)}>
               <MenuIcon size={20} strokeWidth={1.75} aria-hidden="true" />
@@ -92,7 +92,7 @@ export function AppLayout() {
           ) : (
             <>
               {status === 'error' && (
-                <div role="alert" className={styles.banner} data-tone="negative">
+                <div role="alert" className={styles.banner} data-tone="negative" data-print="hide">
                   <TriangleAlert size={18} strokeWidth={1.75} aria-hidden="true" />
                   <p>{error ? t(error) : null}</p>
                   <Button size="sm" onClick={retry}>
@@ -101,7 +101,7 @@ export function AppLayout() {
                 </div>
               )}
               {status === 'ready' && hasDemo && (
-                <div className={styles.banner}>
+                <div className={styles.banner} data-print="hide">
                   <ShieldCheck size={18} strokeWidth={1.75} aria-hidden="true" />
                   <p>
                     {t('You are exploring fictional demo data. Add your own transactions any time, or manage it in')} <Link to="/settings">{t('Settings')}</Link>.

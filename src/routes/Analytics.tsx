@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
-import { ChartNoAxesCombined } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { ChartNoAxesCombined, FileText } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { PageHeader } from '@/components/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { EmptyState, Segmented } from '@/components/ui/Misc'
@@ -29,6 +31,7 @@ export default function Analytics() {
   const fin = useFinance()
   const fmt = useFormat()
   const t = useT()
+  const navigate = useNavigate()
   const today = useToday()
   const [range, setRange] = useState<Range>('12m')
   const [category, setCategory] = useState('all')
@@ -81,7 +84,7 @@ export default function Analytics() {
 
   return (
     <>
-      <PageHeader title={t('Analytics')} description={t('Explore trends, categories and comparisons. Every chart has a data table.')} />
+      <PageHeader title={t('Analytics')} description={t('Explore trends, categories and comparisons. Every chart has a data table.')} actions={<Button icon={<FileText size={16} aria-hidden="true" />} onClick={() => navigate('/report')}>{t('Report (print or PDF)')}</Button>} />
       <Card as="section" aria-label={t('Filters')} className={styles.filters}>
         <div className={styles.filterGroup}>
           <span className={styles.filterLabel} id="range-label">{t('Date range')}</span>

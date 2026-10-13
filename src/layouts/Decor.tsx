@@ -39,14 +39,14 @@ export function Decor() {
   const { theme } = usePrefs()
   if (theme === 'christmas')
     return (
-      <div className={styles.decor} aria-hidden="true" data-theme-decor="christmas">
+      <div className={styles.decor} data-print="hide" aria-hidden="true" data-theme-decor="christmas">
         <Snow />
       </div>
     )
   if (theme === 'halloween')
     return (
       <>
-        <div className={styles.decor} aria-hidden="true" data-theme-decor="halloween">
+        <div className={styles.decor} data-print="hide" aria-hidden="true" data-theme-decor="halloween">
           {[0, 1, 2, 3, 4].map((i) => (
             <Star key={i} className={styles.star} size={10 + (i % 3) * 3} strokeWidth={1.5} style={{ left: `${12 + i * 17}%`, top: `${14 + (i % 3) * 18}%`, animationDelay: `${i * 0.7}s` }} />
           ))}
@@ -62,13 +62,13 @@ export function Decor() {
     )
   if (theme === 'summer')
     return (
-      <div className={styles.decor} aria-hidden="true">
+      <div className={styles.decor} data-print="hide" aria-hidden="true">
         <Sun className={`${styles.a} ${styles.spin}`} size={36} strokeWidth={1.25} />
       </div>
     )
   if (theme === 'aprilfools')
     return (
-      <div className={styles.decor} aria-hidden="true">
+      <div className={styles.decor} data-print="hide" aria-hidden="true">
         <Sparkles className={`${styles.a} ${styles.float}`} size={26} strokeWidth={1.25} />
         <Sparkles className={`${styles.c} ${styles.float}`} size={18} strokeWidth={1.25} />
       </div>

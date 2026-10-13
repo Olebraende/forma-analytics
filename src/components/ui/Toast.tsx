@@ -36,7 +36,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={api}>
       {children}
-      <div className={styles.region} role="region" aria-label={t0('Notifications')}>
+      <div className={styles.region} data-print="hide" role="region" aria-label={t0('Notifications')}>
         <AnimatePresence initial={false}>
           {items.map((t) => {
             const Icon = ICONS[t.tone]

@@ -208,3 +208,41 @@ html[data-motion='reduce'] *::after {
   color: var(--text-muted);
   font-size: var(--text-label);
 }
+
+/* Printing and "Save as PDF": drop app chrome and decoration, keep the content on white paper. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  :root {
+    color-scheme: light;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  [data-print='hide'],
+  .skip-link,
+  dialog,
+  aside {
+    display: none !important;
+  }
+  #main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  article {
+    box-shadow: none !important;
+    border: 0 !important;
+    padding: 0 !important;
+  }
+  thead {
+    display: table-header-group;
+  }
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

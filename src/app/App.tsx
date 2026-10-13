@@ -16,6 +16,7 @@ const Budgets = lazy(() => import('@/routes/Budgets'))
 const Goals = lazy(() => import('@/routes/Goals'))
 const Analytics = lazy(() => import('@/routes/Analytics'))
 const Settings = lazy(() => import('@/routes/Settings'))
+const Report = lazy(() => import('@/routes/Report'))
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -38,6 +39,7 @@ export function AppRoutes() {
         <Route path="budgets" element={<Suspense fallback={<PageSkeleton />}><Budgets /></Suspense>} />
         <Route path="goals" element={<Suspense fallback={<PageSkeleton />}><Goals /></Suspense>} />
         <Route path="analytics" element={<Suspense fallback={<PageSkeleton />}><Analytics /></Suspense>} />
+        <Route path="report" element={<Suspense fallback={<PageSkeleton />}><Report /></Suspense>} />
         <Route path="settings" element={<Suspense fallback={<PageSkeleton />}><Settings /></Suspense>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

@@ -245,3 +245,32 @@ test('Norwegian text does not cause horizontal scroll at 360px', async ({ page }
     expect(overflow, `/${r}`).toBeLessThanOrEqual(0)
   }
 })
+
+test('report page shows a printable summary and hides the app chrome in print', async ({ page, isMobile }) => {
+  await page.goto('#/report')
+  await expect(page.getByRole('heading', { level: 1, name: 'Report' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Financial summary' })).toBeVisible()
+  await expect(page.getByText('not an official document')).toBeVisible()
+  await expect(page.getByText('This report includes fictional demo data.')).toBeVisible()
+  await expect(page.getByRole('table', { name: '' }).first()).toBeVisible()
+  const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()
+  expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).slice(0, 3).join(' | ')}`)).toEqual([])
+  await page.emulateMedia({ media: 'print' })
+  await expect(page.locator('aside')).toBeHidden()
+  await expect(page.getByRole('button', { name: 'Print or save as PDF' })).toBeHidden()
+  await expect(page.getByRole('heading', { name: 'Financial summary' })).toBeVisible()
+  if (!isMobile) {
+    const pdf = await page.pdf({ format: 'A4' })
+    expect(pdf.subarray(0, 5).toString()).toBe('%PDF-')
+    expect(pdf.length).toBeGreaterThan(5000)
+  }
+})
+
+test('report is reachable from analytics and settings', async ({ page }) => {
+  await page.goto('#/analytics')
+  await page.getByRole('button', { name: 'Report (print or PDF)' }).click()
+  await expect(page).toHaveURL(/#\/report$/)
+  await page.goto('#/settings')
+  await page.getByRole('button', { name: 'Report (print or PDF)' }).click()
+  await expect(page).toHaveURL(/#\/report$/)
+})

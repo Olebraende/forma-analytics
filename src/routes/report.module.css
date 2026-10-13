@@ -1,0 +1,127 @@
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch);
+  cursor: pointer;
+}
+.check input {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--accent);
+}
+
+/* The document always uses its own light palette, so it looks the same in every theme and on paper. */
+.paper {
+  --ink: #111827;
+  --ink-soft: #4b5563;
+  --rule: #d1d5db;
+  --tint: #f3f4f6;
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 2.5rem);
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  font-size: 0.9rem;
+}
+.brand {
+  margin: 0;
+  color: var(--ink-soft);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.docTitle {
+  margin: 0.15rem 0 0.25rem;
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+.meta {
+  margin: 0;
+  color: var(--ink-soft);
+}
+.docHead {
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--ink);
+}
+.notice {
+  margin: 1rem 0 0;
+  padding: 0.6rem 0.8rem;
+  background: var(--tint);
+  border-left: 3px solid var(--ink-soft);
+  color: var(--ink);
+  font-size: 0.8rem;
+}
+.notice[data-tone='warn'] {
+  border-left-color: #b45309;
+  background: #fffbeb;
+}
+.h {
+  margin: 1.5rem 0 0.4rem;
+  font-size: 1rem;
+  break-after: avoid;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.table th,
+.table td {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  font-weight: 400;
+}
+.table thead th {
+  font-weight: 600;
+  background: var(--tint);
+  color: var(--ink);
+}
+.table tbody th[scope='row'] {
+  font-weight: 500;
+}
+.table td:not(:first-child),
+.table thead th:not(:first-child) {
+  text-align: right;
+}
+.list td:nth-child(2),
+.list td:nth-child(3),
+.list thead th:nth-child(2),
+.list thead th:nth-child(3) {
+  text-align: left;
+}
+.total th,
+.total td {
+  font-weight: 700;
+  border-top: 2px solid var(--ink);
+}
+.table tr {
+  break-inside: avoid;
+}
+.empty {
+  margin-top: 1.5rem;
+  color: var(--ink-soft);
+}
+@media (max-width: 40rem) {
+  .paper {
+    padding: 0.75rem;
+    overflow-x: auto;
+  }
+  .table {
+    font-size: 0.8rem;
+  }
+  .table th,
+  .table td {
+    padding: 0.3rem 0.35rem;
+  }
+}
