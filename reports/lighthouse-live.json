@@ -1,17 +1,17 @@
 {
-  "measuredAt": "2026-10-08T12:46:09.441Z",
+  "measuredAt": "2026-10-13T14:40:00.865Z",
   "base": "https://olebraende.github.io/forma-analytics/",
   "rows": [
     {
       "form": "mobile",
       "route": "/",
-      "performance": 92,
+      "performance": 90,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
       "lcp": "3.0 s",
       "cls": "0",
-      "tbt": "30 ms"
+      "tbt": "20 ms"
     },
     {
       "form": "mobile",
@@ -20,7 +20,7 @@
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
-      "lcp": "1.7 s",
+      "lcp": "1.8 s",
       "cls": "0",
       "tbt": "0 ms"
     },
@@ -31,7 +31,7 @@
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
-      "lcp": "1.8 s",
+      "lcp": "2.0 s",
       "cls": "0",
       "tbt": "0 ms"
     },
@@ -42,29 +42,29 @@
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
-      "lcp": "1.8 s",
+      "lcp": "2.0 s",
       "cls": "0",
       "tbt": "0 ms"
     },
     {
       "form": "mobile",
       "route": "/analytics",
-      "performance": 97,
+      "performance": 98,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
       "lcp": "1.8 s",
       "cls": "0",
-      "tbt": "170 ms"
+      "tbt": "100 ms"
     },
     {
       "form": "mobile",
       "route": "/settings",
-      "performance": 98,
+      "performance": 99,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
-      "lcp": "2.1 s",
+      "lcp": "1.9 s",
       "cls": "0",
       "tbt": "0 ms"
     },
@@ -97,7 +97,7 @@
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
-      "lcp": "0.4 s",
+      "lcp": "0.6 s",
       "cls": "0",
       "tbt": "0 ms"
     },

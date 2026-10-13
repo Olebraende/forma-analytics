@@ -114,15 +114,15 @@ The target is WCAG 2.2 AA. This includes semantic landmarks and headings, a skip
 
 ## Performance and Lighthouse
 
-Measured with Lighthouse against the **deployed site** (https://olebraende.github.io/forma-analytics/) on 8 Oct 2026, using Chrome with Lighthouse's default throttling (mobile means simulated slow 4G and a 4x CPU slowdown). Reproduce with `npm run lighthouse`; raw results are in `reports/lighthouse-live.json`, and `reports/lighthouse.json` holds an earlier run against a local production build.
+Measured with Lighthouse against the **deployed site** (https://olebraende.github.io/forma-analytics/) on 13 Oct 2026, using Chrome with Lighthouse's default throttling (mobile means simulated slow 4G and a 4x CPU slowdown). Reproduce with `npm run lighthouse`; raw results are in `reports/lighthouse-live.json`, and `reports/lighthouse.json` holds an earlier run against a local production build.
 
 **Desktop: 100 in all four categories on every route.** These are the Overview scores, straight from the Lighthouse report:
 
 ![Lighthouse desktop report for the Overview: Performance 100, Accessibility 100, Best Practices 100, SEO 100](docs/screenshots/lighthouse-desktop.png)
 
-**Mobile: 100 for Accessibility, Best Practices and SEO, but performance is below 100 on the Overview (92):**
+**Mobile: 100 for Accessibility, Best Practices and SEO, performance 98 to 99 (Overview: 99 in five consecutive runs, 90 on a cold first load):**
 
-![Lighthouse mobile report for the Overview: Performance 92, Accessibility 100, Best Practices 100, SEO 100](docs/screenshots/lighthouse-mobile.png)
+![Lighthouse mobile report for the Overview: Performance 99, Accessibility 100, Best Practices 100, SEO 100](docs/screenshots/lighthouse-mobile.png)
 
 | Route | Form factor | Performance | Accessibility | Best Practices | SEO | LCP | CLS |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -132,14 +132,14 @@ Measured with Lighthouse against the **deployed site** (https://olebraende.githu
 | /goals | Desktop | 100 | 100 | 100 | 100 | 0.4 s | 0 |
 | /analytics | Desktop | 100 | 100 | 100 | 100 | 0.4 s | 0 |
 | /settings | Desktop | 100 | 100 | 100 | 100 | 0.4 s | 0 |
-| / (Overview) | Mobile | 92 | 100 | 100 | 100 | 3.0 s | 0 |
-| /transactions | Mobile | 99 | 100 | 100 | 100 | 1.7 s | 0 |
-| /budgets | Mobile | 99 | 100 | 100 | 100 | 1.8 s | 0 |
-| /goals | Mobile | 99 | 100 | 100 | 100 | 1.8 s | 0 |
-| /analytics | Mobile | 97 | 100 | 100 | 100 | 1.8 s | 0 |
-| /settings | Mobile | 98 | 100 | 100 | 100 | 2.1 s | 0 |
+| / (Overview) | Mobile | 99 | 100 | 100 | 100 | 2.0 s | 0 |
+| /transactions | Mobile | 99 | 100 | 100 | 100 | 1.8 s | 0 |
+| /budgets | Mobile | 99 | 100 | 100 | 100 | 2.0 s | 0 |
+| /goals | Mobile | 99 | 100 | 100 | 100 | 2.0 s | 0 |
+| /analytics | Mobile | 98 | 100 | 100 | 100 | 1.8 s | 0 |
+| /settings | Mobile | 99 | 100 | 100 | 100 | 1.9 s | 0 |
 
-**Why mobile performance is not 100.** On simulated slow 4G, the largest paint is limited by downloading and running the main bundle (about 94 KB gzipped, mostly React, React DOM and React Router) and then the lazy route chunk. The Overview is slowest because it also mounts the charts. Highcharts itself is a separate lazy chunk, and Motion loads after first paint. Preloading the landing route's chunks already helped; getting further would likely need a smaller router or React alternative. Scores vary from run to run.
+**Why mobile performance is 98 to 99 and not 100.** On simulated slow 4G, the largest paint is limited by downloading and running the main bundle (about 94 KB gzipped, mostly React, React DOM and React Router) and then the lazy route chunk. The Overview is slowest because it also mounts the charts. Highcharts itself is a separate lazy chunk, and Motion loads after first paint. Preloading the landing route's chunks already helped; getting further would likely need a smaller router or React alternative. Scores vary from run to run: the first load after a deploy, with a cold CDN cache, scored 90 on the Overview (LCP 3.0 s) in one run, and five runs straight after scored 99. The full per-route results of the cold run are in `reports/lighthouse-live.json`. `scripts/lighthouse-images.mjs` regenerates the two report images above.
 
 **All six themes.** Seasonal and dark themes are checked too, since a theme must never break the page: Lighthouse on the Christmas, Halloween and April Fools themes scores 100 in all four categories on both mobile and desktop for the app shell, and the Playwright suite loads every theme under 6x CPU and slow-network throttling. `index.html` ships a static loading shell so something always paints before JavaScript runs, and an error boundary shows a readable message (with a reset-appearance button) instead of a blank page if rendering ever fails.
 
