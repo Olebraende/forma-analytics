@@ -62,9 +62,10 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
   }, [theme, reducedMotion])
 
   useEffect(() => {
+    document.documentElement.lang = prefs.language
     document.documentElement.dataset.motion = reducedMotion ? 'reduce' : 'full'
     document.documentElement.dataset.decor = prefs.decorations ? 'on' : 'off'
-  }, [reducedMotion, prefs.decorations])
+  }, [reducedMotion, prefs.decorations, prefs.language])
 
   const value = useMemo(() => ({ prefs, update, theme, reducedMotion }), [prefs, update, theme, reducedMotion])
   return (

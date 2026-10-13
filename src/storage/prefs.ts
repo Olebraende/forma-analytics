@@ -1,4 +1,5 @@
 import { isThemePreference, type ThemePreference } from '@/themes/themes'
+import { detectLanguage, isLanguage, type Language } from '@/i18n'
 import { CURRENCIES, type Currency } from '@/utils/money'
 
 export const LOCALES = [
@@ -6,6 +7,7 @@ export const LOCALES = [
   { id: 'en-GB', label: 'English (UK)' },
   { id: 'en-US', label: 'English (US)' },
   { id: 'nb-NO', label: 'Norsk bokmål' },
+  { id: 'nn-NO', label: 'Norsk nynorsk' },
   { id: 'de-DE', label: 'Deutsch' },
   { id: 'sv-SE', label: 'Svenska' },
 ] as const
@@ -15,6 +17,7 @@ export interface Prefs {
   seasonal: boolean
   currency: Currency
   locale: string
+  language: Language
   motion: 'system' | 'reduce'
   decorations: boolean
   sidebarCollapsed: boolean
@@ -29,6 +32,7 @@ export const DEFAULT_PREFS: Prefs = {
   seasonal: false,
   currency: 'NOK',
   locale: 'en-NO',
+  language: 'en',
   motion: 'system',
   decorations: true,
   sidebarCollapsed: false,
@@ -41,13 +45,17 @@ export const PREFS_KEY = 'forma:prefs'
 export function loadPrefs(): Prefs {
   try {
     const raw = localStorage.getItem(PREFS_KEY)
-    if (!raw) return DEFAULT_PREFS
+    if (!raw) {
+      const language = detectLanguage()
+      return language === 'en' ? DEFAULT_PREFS : { ...DEFAULT_PREFS, language, locale: language === 'nn' ? 'nn-NO' : 'nb-NO' }
+    }
     const p = JSON.parse(raw) as Record<string, unknown>
     return {
       theme: isThemePreference(p.theme) ? p.theme : DEFAULT_PREFS.theme,
       seasonal: p.seasonal === true,
       currency: CURRENCIES.includes(p.currency as Currency) ? (p.currency as Currency) : DEFAULT_PREFS.currency,
       locale: LOCALES.some((l) => l.id === p.locale) ? (p.locale as string) : DEFAULT_PREFS.locale,
+      language: isLanguage(p.language) ? p.language : detectLanguage(),
       motion: p.motion === 'reduce' ? 'reduce' : 'system',
       decorations: p.decorations !== false,
       sidebarCollapsed: p.sidebarCollapsed === true,
