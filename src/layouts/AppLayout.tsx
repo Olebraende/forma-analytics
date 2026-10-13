@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import { m } from 'motion/react'
 import { Menu as MenuIcon, Plus, ShieldCheck, TriangleAlert } from 'lucide-react'
 import { PageSkeleton } from './PageSkeleton'
@@ -10,6 +10,8 @@ import { Decor } from './Decor'
 import { Brand } from './Brand'
 import { Garland } from './Garland'
 import { Button, IconButton } from '@/components/ui/Button'
+import { useToast } from '@/components/ui/Toast'
+import { TransactionForm } from '@/features/TransactionForm'
 import { useFinance } from '@/finance/store'
 import { usePrefs } from '@/app/prefs'
 import { NAV } from './nav'
@@ -34,9 +36,10 @@ const FOOLS_LINES = [
 export function AppLayout() {
   const [navOpen, setNavOpen] = useState(false)
   const { pathname } = useLocation()
-  const navigate = useNavigate()
+  const toast = useToast()
+  const [adding, setAdding] = useState(false)
   const { theme } = usePrefs()
-  const { hasDemo, status, error, retry } = useFinance()
+  const { hasDemo, status, error, retry, saveTransaction } = useFinance()
   const mainRef = useRef<HTMLElement>(null)
   const title = NAV.find((n) => (n.end ? pathname === n.to : pathname.startsWith(n.to)))?.label ?? 'Forma Analytics'
 
@@ -74,7 +77,7 @@ export function AppLayout() {
             </div>
           </div>
           <div className={styles.headerRight}>
-            <Button variant="primary" icon={<Plus size={16} strokeWidth={2} aria-hidden="true" />} onClick={() => navigate('/transactions?new=1')}>
+            <Button variant="primary" icon={<Plus size={16} strokeWidth={2} aria-hidden="true" />} onClick={() => setAdding(true)}>
               <span className={styles.addLabel}>Add transaction</span>
             </Button>
             <ThemeMenu />
@@ -109,6 +112,15 @@ export function AppLayout() {
             </>
           )}
         </main>
+        {adding && (
+          <TransactionForm
+            onClose={() => setAdding(false)}
+            onSave={async (t) => {
+              await saveTransaction(t)
+              toast.show('Transaction added')
+            }}
+          />
+        )}
       </div>
     </div>
   )
