@@ -211,3 +211,37 @@ test('adding income from the header updates the overview in place', async ({ pag
     expect(await page.locator('.highcharts-series').first().innerHTML()).not.toBe(seriesBefore)
   }).toPass({ timeout: 5000 })
 })
+
+for (const [lang, overview, settings] of [['nb', 'Oversikt', 'Innstillinger'], ['nn', 'Oversikt', 'Innstillingar']] as const) {
+  test(`${lang}: the interface is translated and passes axe`, async ({ page }) => {
+    await page.addInitScript((l) => localStorage.setItem('forma:prefs', JSON.stringify({ language: l, demoSeeded: false })), lang)
+    await page.goto('#/')
+    await expect(page.getByRole('heading', { level: 1, name: overview })).toBeVisible()
+    await expect(page.locator('html')).toHaveAttribute('lang', lang)
+    await expect(page.getByRole('main').getByRole('link', { name: settings })).toBeVisible()
+    await expect(page.locator('.highcharts-container').first()).toBeVisible()
+    await page.waitForTimeout(1200)
+    const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()
+    expect(results.violations.map((v) => v.id)).toEqual([])
+  })
+}
+
+test('the language can be changed in settings and persists', async ({ page }) => {
+  await page.goto('#/settings')
+  await page.getByRole('combobox', { name: 'Language' }).selectOption('nb')
+  await expect(page.getByRole('heading', { level: 1, name: 'Innstillinger' })).toBeVisible()
+  await page.reload()
+  await expect(page.getByRole('heading', { level: 1, name: 'Innstillinger' })).toBeVisible()
+})
+
+test('Norwegian text does not cause horizontal scroll at 360px', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('forma:prefs', JSON.stringify({ language: 'nb', demoSeeded: false })))
+  await page.setViewportSize({ width: 360, height: 740 })
+  for (const r of ROUTES) {
+    await page.goto(`#/${r}`)
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    await page.waitForTimeout(400)
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
+    expect(overflow, `/${r}`).toBeLessThanOrEqual(0)
+  }
+})

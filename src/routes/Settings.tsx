@@ -49,7 +49,7 @@ export default function Settings() {
     if (!file) return
     if (file.size > MAX_IMPORT_BYTES) return setImportError(t('That file is larger than 10 MB, which is far beyond a normal backup.'))
     const result = previewImport(await file.text(), fin)
-    if (!result.ok) return setImportError(result.error)
+    if (!result.ok) return setImportError(t(result.error))
     setPreview(result.preview)
   }
   const run = async (fn: () => Promise<void>, ok: string) => {

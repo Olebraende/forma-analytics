@@ -94,7 +94,7 @@ export function AppLayout() {
               {status === 'error' && (
                 <div role="alert" className={styles.banner} data-tone="negative">
                   <TriangleAlert size={18} strokeWidth={1.75} aria-hidden="true" />
-                  <p>{error}</p>
+                  <p>{error ? t(error) : null}</p>
                   <Button size="sm" onClick={retry}>
                     {t('Try again')}
                   </Button>
