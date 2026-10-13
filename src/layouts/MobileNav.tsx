@@ -5,12 +5,14 @@ import { NavList } from './Sidebar'
 import { Brand } from './Brand'
 import { Mascot } from './Mascot'
 import { usePrefs } from '@/app/prefs'
+import { useT } from '@/i18n/useT'
 import { IconButton } from '@/components/ui/Button'
 import styles from './MobileNav.module.css'
 
 /** Slide-in navigation drawer on a native modal <dialog> (focus trap and Escape included). */
 export function MobileNav({ open, onClose, footnote }: { open: boolean; onClose: () => void; footnote: string }) {
   const { prefs, theme } = usePrefs()
+  const t = useT()
   const mascot = (theme === 'christmas' || theme === 'halloween') && prefs.decorations ? theme : null
   const ref = useRef<HTMLDialogElement>(null)
   const { pathname } = useLocation()
@@ -37,7 +39,7 @@ export function MobileNav({ open, onClose, footnote }: { open: boolean; onClose:
     <dialog
       ref={ref}
       className={styles.drawer}
-      aria-label="Navigation menu"
+      aria-label={t('Navigation menu')}
       onClose={onClose}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose()
@@ -46,11 +48,11 @@ export function MobileNav({ open, onClose, footnote }: { open: boolean; onClose:
       <div className={styles.panel}>
         <div className={styles.head}>
           <Brand />
-          <IconButton label="Close menu" onClick={onClose}>
+          <IconButton label={t('Close menu')} onClick={onClose}>
             <X size={20} strokeWidth={2} aria-hidden="true" />
           </IconButton>
         </div>
-        <nav aria-label="Main">
+        <nav aria-label={t('Main')}>
           <NavList idPrefix="mobile" onNavigate={onClose} />
         </nav>
         {mascot && (

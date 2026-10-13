@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
-import { PREFS_KEY } from '@/storage/prefs'
+import { makeT } from '@/i18n'
+import { loadPrefs, PREFS_KEY } from '@/storage/prefs'
 import styles from './ErrorBoundary.module.css'
 
 interface State {
@@ -33,17 +34,19 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
 
   render() {
     if (!this.state.error) return this.props.children
+    // Sits above the providers, so it reads the saved language directly.
+    const t = makeT(loadPrefs().language)
     return (
       <main className={styles.wrap} role="alert">
-        <h1 className={styles.title}>Something went wrong</h1>
-        <p className={styles.text}>Forma Analytics hit an unexpected error. Your saved transactions are stored separately and have not been changed.</p>
+        <h1 className={styles.title}>{t('Something went wrong')}</h1>
+        <p className={styles.text}>{t('Forma Analytics hit an unexpected error. Your saved transactions are stored separately and have not been changed.')}</p>
         <pre className={styles.detail}>{this.state.error.message}</pre>
         <div className={styles.actions}>
           <button type="button" className={styles.primary} onClick={() => location.reload()}>
-            Reload
+            {t('Reload')}
           </button>
           <button type="button" className={styles.secondary} onClick={this.resetAppearance}>
-            Reset appearance settings
+            {t('Reset appearance settings')}
           </button>
         </div>
       </main>

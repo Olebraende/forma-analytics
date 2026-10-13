@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type Highcharts from 'highcharts'
+import { useT } from '@/i18n/useT'
 import { loadHighcharts } from './highcharts'
 import styles from './Charts.module.css'
 
@@ -13,6 +14,7 @@ export function HighchartsChart({ options, height }: { options: Highcharts.Optio
   const optionsRef = useRef(options)
   optionsRef.current = options
   const [failed, setFailed] = useState(false)
+  const t = useT()
 
   useEffect(() => {
     let cancelled = false
@@ -38,7 +40,7 @@ export function HighchartsChart({ options, height }: { options: Highcharts.Optio
     chartRef.current?.update(options, true, true)
   }, [options])
 
-  if (failed) return <p className={styles.chartError}>The chart could not be loaded. The data table below has the same information.</p>
+  if (failed) return <p className={styles.chartError}>{t('The chart could not be loaded. The data table below has the same information.')}</p>
   // Fixed height reserved up front, so loading the chart library never shifts the layout.
   return <div ref={hostRef} className={styles.hc} style={{ height }} />
 }

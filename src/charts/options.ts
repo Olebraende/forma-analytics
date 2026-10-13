@@ -1,4 +1,5 @@
 import type Highcharts from 'highcharts'
+import type { TFunction } from '@/i18n'
 import type { ChartColors } from './chartTheme'
 import type { CartesianChartProps, DonutDatum } from './types'
 
@@ -38,7 +39,10 @@ const credits = (c: ChartColors): Highcharts.CreditsOptions => ({
 interface Common {
   colors: ChartColors
   reducedMotion: boolean
+  /** Translates screen-reader text; visual labels are already translated by the caller. */
+  t?: TFunction
 }
+const id: TFunction = (text, vars) => (vars ? text.replace(/\{(\w+)\}/g, (m, k: string) => String(vars[k] ?? m)) : text)
 
 export function cartesianOptions(p: CartesianChartProps & Common): Highcharts.Options {
   const { colors: c, categories, series, formatValue, formatTick = formatValue, height = 280, label, summary } = p
@@ -114,6 +118,7 @@ export function cartesianOptions(p: CartesianChartProps & Common): Highcharts.Op
 
 export function donutOptions(p: { data: DonutDatum[]; formatValue: (v: number) => string; centerLabel: string; label: string; total: number } & Common): Highcharts.Options {
   const { colors: c, data, formatValue, centerLabel, label, total } = p
+  const t = p.t ?? id
   const animation = p.reducedMotion ? false : { duration: 650 }
   return {
     chart: { type: 'pie', height: 220, backgroundColor: 'transparent', style: { fontFamily: 'inherit' }, spacing: [0, 0, 8, 0], animation },
@@ -123,9 +128,9 @@ export function donutOptions(p: { data: DonutDatum[]; formatValue: (v: number) =
     legend: { enabled: false },
     accessibility: {
       enabled: true,
-      description: `${label}. Total ${formatValue(total)}. The list beside the chart gives every value.`,
+      description: t('{label}. Total {total}. The list beside the chart gives every value.', { label, total: formatValue(total) }),
       screenReaderSection: { beforeChartFormat: '<div>{chartTitle}</div><div>{typeDescription}</div><div>{chartLongdesc}</div><div>{xAxisDescription}</div><div>{yAxisDescription}</div>' },
-      point: { descriptionFormatter: (pt) => `${pt.name}: ${formatValue(pt.y ?? 0)}, ${Math.round(((pt.y ?? 0) / (total || 1)) * 100)}% of the total.` },
+      point: { descriptionFormatter: (pt) => t('{name}: {value}, {pct}% of the total.', { name: pt.name, value: formatValue(pt.y ?? 0), pct: Math.round(((pt.y ?? 0) / (total || 1)) * 100) }) },
     },
     tooltip: {
       backgroundColor: c.surface,
@@ -163,6 +168,7 @@ export interface HeatmapProps {
 
 export function heatmapOptions(p: HeatmapProps & Common): Highcharts.Options {
   const { colors: c, xCategories, yCategories, points, formatValue, formatTick, label, summary } = p
+  const t = p.t ?? id
   const animation = p.reducedMotion ? false : { duration: 650 }
   const hue = c.series[0] as string
   const max = Math.max(1, ...points.map((pt) => pt[2]))
@@ -183,7 +189,7 @@ export function heatmapOptions(p: HeatmapProps & Common): Highcharts.Options {
       description: summary,
       screenReaderSection: { beforeChartFormat: '<div>{chartTitle}</div><div>{typeDescription}</div><div>{chartLongdesc}</div>' },
       keyboardNavigation: { enabled: true },
-      point: { descriptionFormatter: (pt) => `${yCategories[pt.y ?? 0] ?? ''} in ${xCategories[pt.x] ?? ''}: ${formatValue(Number((pt as unknown as { value: number }).value ?? 0))}.` },
+      point: { descriptionFormatter: (pt) => t('{category} in {month}: {value}.', { category: yCategories[pt.y ?? 0] ?? '', month: xCategories[pt.x] ?? '', value: formatValue(Number((pt as unknown as { value: number }).value ?? 0)) }) },
     },
     xAxis: { categories: xCategories, lineWidth: 0, tickLength: 0, labels: { style: { color: c.subtle, fontSize: '11px' } } },
     yAxis: { categories: yCategories, reversed: true, title: { text: undefined }, gridLineWidth: 0, labels: { style: { color: c.muted, fontSize: '12px' } } },

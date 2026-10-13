@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button } from './Button'
 import { Modal } from './Modal'
+import { useT } from '@/i18n/useT'
 
 interface Props {
   title: string
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function ConfirmDialog({ title, message, confirmLabel, tone = 'danger', onConfirm, onCancel }: Props) {
+  const t = useT()
   const [busy, setBusy] = useState(false)
   return (
     <Modal
@@ -21,7 +23,7 @@ export function ConfirmDialog({ title, message, confirmLabel, tone = 'danger', o
       onClose={onCancel}
       footer={
         <>
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onCancel}>{t('Cancel')}</Button>
           <Button
             variant={tone}
             loading={busy}

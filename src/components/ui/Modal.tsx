@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { IconButton } from './Button'
+import { useT } from '@/i18n/useT'
 import styles from './Modal.module.css'
 
 interface ModalProps {
@@ -18,6 +19,7 @@ interface ModalProps {
  * Mount it only while open; it animates out before calling onClose.
  */
 export function Modal({ title, description, onClose, children, footer, size = 'md' }: ModalProps) {
+  const t = useT()
   const ref = useRef<HTMLDialogElement>(null)
   const [closing, setClosing] = useState(false)
   const titleId = useId()
@@ -70,7 +72,7 @@ export function Modal({ title, description, onClose, children, footer, size = 'm
               </p>
             )}
           </div>
-          <IconButton label="Close dialog" onClick={requestClose}>
+          <IconButton label={t('Close dialog')} onClick={requestClose}>
             <X size={18} strokeWidth={2} aria-hidden="true" />
           </IconButton>
         </header>

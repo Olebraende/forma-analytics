@@ -5,22 +5,24 @@ import { NAV } from './nav'
 import { Brand } from './Brand'
 import { Mascot } from './Mascot'
 import { usePrefs } from '@/app/prefs'
+import { useT } from '@/i18n/useT'
 import styles from './Sidebar.module.css'
 
 export function NavList({ onNavigate, collapsed = false, idPrefix }: { onNavigate?: () => void; collapsed?: boolean; idPrefix: string }) {
+  const t = useT()
   return (
     <ul className={styles.list}>
       {NAV.map(({ to, label, icon: Icon, end }) => (
         <li key={to}>
-          <NavLink to={to} end={end} onClick={onNavigate} className={styles.link} title={collapsed ? label : undefined}>
+          <NavLink to={to} end={end} onClick={onNavigate} className={styles.link} title={collapsed ? t(label) : undefined}>
             {({ isActive }) => (
               <>
                 {isActive && <m.span layoutId={`${idPrefix}-indicator`} className={styles.indicator} transition={{ type: 'spring', stiffness: 500, damping: 40 }} />}
                 <Icon size={20} strokeWidth={1.75} aria-hidden="true" className={styles.icon} />
                 <span className={styles.label} data-collapsed={collapsed || undefined}>
-                  {label}
+                  {t(label)}
                 </span>
-                {isActive && <span className="sr-only"> (current page)</span>}
+                {isActive && <span className="sr-only"> ({t('current page')})</span>}
               </>
             )}
           </NavLink>
@@ -32,6 +34,7 @@ export function NavList({ onNavigate, collapsed = false, idPrefix }: { onNavigat
 
 export function Sidebar({ footnote }: { footnote: string }) {
   const { prefs, update, theme } = usePrefs()
+  const t = useT()
   const mascot = (theme === 'christmas' || theme === 'halloween') && prefs.decorations ? theme : null
   const collapsed = prefs.sidebarCollapsed
   return (
@@ -46,7 +49,7 @@ export function Sidebar({ footnote }: { footnote: string }) {
       <div className={styles.top}>
         <Brand compact={collapsed} />
       </div>
-      <nav aria-label="Main">
+      <nav aria-label={t('Main')}>
         <NavList collapsed={collapsed} idPrefix="desktop" />
       </nav>
       <div className={styles.bottom}>
@@ -55,11 +58,11 @@ export function Sidebar({ footnote }: { footnote: string }) {
           type="button"
           className={styles.collapse}
           aria-pressed={collapsed}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={collapsed ? t('Expand sidebar') : t('Collapse sidebar')}
           onClick={() => update({ sidebarCollapsed: !collapsed })}
         >
           {collapsed ? <PanelLeftOpen size={20} strokeWidth={1.75} aria-hidden="true" /> : <PanelLeftClose size={20} strokeWidth={1.75} aria-hidden="true" />}
-          {!collapsed && <span>Collapse</span>}
+          {!collapsed && <span>{t('Collapse')}</span>}
         </button>
       </div>
     </m.aside>

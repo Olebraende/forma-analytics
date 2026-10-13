@@ -1,9 +1,11 @@
 import { Skeleton } from '@/components/ui/Misc'
+import { useT } from '@/i18n/useT'
 import { Card } from '@/components/ui/Card'
 
 export function PageSkeleton() {
+  const t = useT()
   return (
-    <div role="status" aria-label="Loading page" style={{ display: 'grid', gap: 'var(--space-5)' }}>
+    <div role="status" aria-label={t('Loading page')} style={{ display: 'grid', gap: 'var(--space-5)' }}>
       <Skeleton height="2.25rem" width="14rem" />
       <div style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fit, minmax(14rem, 1fr))' }}>
         {[0, 1, 2, 3].map((i) => (

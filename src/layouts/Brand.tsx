@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useToast } from '@/components/ui/Toast'
 import { usePrefs } from '@/app/prefs'
+import { useT } from '@/i18n/useT'
 import styles from './Sidebar.module.css'
 
 const EGGS = [
@@ -12,6 +13,7 @@ const EGGS = [
 export function Brand({ compact }: { compact?: boolean }) {
   const { theme } = usePrefs()
   const toast = useToast()
+  const t = useT()
   const [clicks, setClicks] = useState(0)
   const fools = theme === 'aprilfools'
   return (
@@ -22,7 +24,7 @@ export function Brand({ compact }: { compact?: boolean }) {
         if (!fools) return
         const n = clicks + 1
         setClicks(n)
-        if (n % 5 === 0) toast.show(EGGS[(n / 5 - 1) % EGGS.length] as string, 'info')
+        if (n % 5 === 0) toast.show(t(EGGS[(n / 5 - 1) % EGGS.length] as string), 'info')
       }}
     >
       <span className={styles.logoWrap}>

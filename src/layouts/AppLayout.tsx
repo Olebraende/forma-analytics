@@ -14,6 +14,7 @@ import { useToast } from '@/components/ui/Toast'
 import { TransactionForm } from '@/features/TransactionForm'
 import { useFinance } from '@/finance/store'
 import { usePrefs } from '@/app/prefs'
+import { useT } from '@/i18n/useT'
 import { NAV } from './nav'
 import styles from './AppLayout.module.css'
 
@@ -37,11 +38,12 @@ export function AppLayout() {
   const [navOpen, setNavOpen] = useState(false)
   const { pathname } = useLocation()
   const toast = useToast()
+  const t = useT()
   const [adding, setAdding] = useState(false)
   const { theme } = usePrefs()
   const { hasDemo, status, error, retry, saveTransaction } = useFinance()
   const mainRef = useRef<HTMLElement>(null)
-  const title = NAV.find((n) => (n.end ? pathname === n.to : pathname.startsWith(n.to)))?.label ?? 'Forma Analytics'
+  const title = t(NAV.find((n) => (n.end ? pathname === n.to : pathname.startsWith(n.to)))?.label ?? 'Forma Analytics')
 
   // Announce route changes and reset scroll/focus for keyboard and screen reader users.
   const firstRender = useRef(true)
@@ -55,13 +57,13 @@ export function AppLayout() {
     mainRef.current?.focus({ preventScroll: true })
   }, [pathname, title])
 
-  const pick = (lines: string[]) => lines[new Date().getMinutes() % lines.length] as string
-  const footnote = theme === 'aprilfools' ? pick(FOOLS_LINES) : theme === 'christmas' ? pick(CHRISTMAS_LINES) : theme === 'halloween' ? pick(HALLOWEEN_LINES) : 'Your data stays in this browser.'
+  const pick = (lines: string[]) => t(lines[new Date().getMinutes() % lines.length] as string)
+  const footnote = theme === 'aprilfools' ? pick(FOOLS_LINES) : theme === 'christmas' ? pick(CHRISTMAS_LINES) : theme === 'halloween' ? pick(HALLOWEEN_LINES) : t('Your data stays in this browser.')
 
   return (
     <div className={styles.shell}>
       <a href="#main" className="skip-link">
-        Skip to content
+        {t('Skip to content')}
       </a>
       <Decor />
       <Sidebar footnote={footnote} />
@@ -69,7 +71,7 @@ export function AppLayout() {
       <div className={styles.column}>
         <header className={styles.header}>
           <div className={styles.headerLeft}>
-            <IconButton label="Open navigation menu" className={styles.menuButton} onClick={() => setNavOpen(true)}>
+            <IconButton label={t('Open navigation menu')} className={styles.menuButton} onClick={() => setNavOpen(true)}>
               <MenuIcon size={20} strokeWidth={1.75} aria-hidden="true" />
             </IconButton>
             <div className={styles.mobileBrand}>
@@ -78,7 +80,7 @@ export function AppLayout() {
           </div>
           <div className={styles.headerRight}>
             <Button variant="primary" icon={<Plus size={16} strokeWidth={2} aria-hidden="true" />} onClick={() => setAdding(true)}>
-              <span className={styles.addLabel}>Add transaction</span>
+              <span className={styles.addLabel}>{t('Add transaction')}</span>
             </Button>
             <ThemeMenu />
           </div>
@@ -94,7 +96,7 @@ export function AppLayout() {
                   <TriangleAlert size={18} strokeWidth={1.75} aria-hidden="true" />
                   <p>{error}</p>
                   <Button size="sm" onClick={retry}>
-                    Try again
+                    {t('Try again')}
                   </Button>
                 </div>
               )}
@@ -102,7 +104,7 @@ export function AppLayout() {
                 <div className={styles.banner}>
                   <ShieldCheck size={18} strokeWidth={1.75} aria-hidden="true" />
                   <p>
-                    You are exploring fictional demo data. Add your own transactions any time, or manage it in <Link to="/settings">Settings</Link>.
+                    {t('You are exploring fictional demo data. Add your own transactions any time, or manage it in')} <Link to="/settings">{t('Settings')}</Link>.
                   </p>
                 </div>
               )}
@@ -115,9 +117,9 @@ export function AppLayout() {
         {adding && (
           <TransactionForm
             onClose={() => setAdding(false)}
-            onSave={async (t) => {
-              await saveTransaction(t)
-              toast.show('Transaction added')
+            onSave={async (saved) => {
+              await saveTransaction(saved)
+              toast.show(t('Transaction added'))
             }}
           />
         )}

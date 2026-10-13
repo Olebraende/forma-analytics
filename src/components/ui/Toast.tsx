@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react'
 import { AnimatePresence, m } from 'motion/react'
 import { CircleAlert, CircleCheck, Info, X } from 'lucide-react'
+import { useT } from '@/i18n/useT'
 import styles from './Toast.module.css'
 
 type Tone = 'success' | 'error' | 'info'
@@ -18,6 +19,7 @@ const Ctx = createContext<ToastApi>({ show: () => undefined })
 const ICONS = { success: CircleCheck, error: CircleAlert, info: Info }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
+  const t0 = useT()
   const [items, setItems] = useState<ToastItem[]>([])
   const nextId = useRef(1)
   const dismiss = useCallback((id: number) => setItems((l) => l.filter((t) => t.id !== id)), [])
@@ -34,7 +36,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={api}>
       {children}
-      <div className={styles.region} role="region" aria-label="Notifications">
+      <div className={styles.region} role="region" aria-label={t0('Notifications')}>
         <AnimatePresence initial={false}>
           {items.map((t) => {
             const Icon = ICONS[t.tone]
@@ -51,7 +53,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               >
                 <Icon size={18} strokeWidth={2} aria-hidden="true" className={styles.icon} />
                 <p className={styles.message}>{t.message}</p>
-                <button type="button" className={styles.close} aria-label="Dismiss notification" onClick={() => dismiss(t.id)}>
+                <button type="button" className={styles.close} aria-label={t0('Dismiss notification')} onClick={() => dismiss(t.id)}>
                   <X size={16} strokeWidth={2} aria-hidden="true" />
                 </button>
               </m.div>

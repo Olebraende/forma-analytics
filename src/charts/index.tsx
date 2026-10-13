@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { usePrefs } from '@/app/prefs'
 import { CartesianChart } from './CartesianChart'
+import { useT } from '@/i18n/useT'
 import { useChartColors } from './chartTheme'
 import { HighchartsChart } from './HighchartsChart'
 import { donutOptions, heatmapOptions, type HeatmapProps } from './options'
@@ -37,6 +38,7 @@ export function FinancialTrendChart({
   summary?: string
   height?: number
 }) {
+  const t = useT()
   return (
     <CartesianChart
       categories={points.map((p) => p.label)}
@@ -46,9 +48,9 @@ export function FinancialTrendChart({
       summary={summary}
       height={height}
       series={[
-        { id: 'income', label: 'Income', kind: 'column', values: points.map((p) => p.income) },
-        { id: 'expenses', label: 'Expenses', kind: 'column', values: points.map((p) => p.expenses) },
-        { id: 'net', label: 'Net cash flow', kind: 'line', dash: 'dashed', values: points.map((p) => p.net) },
+        { id: 'income', label: t('Income'), kind: 'column', values: points.map((p) => p.income) },
+        { id: 'expenses', label: t('Expenses'), kind: 'column', values: points.map((p) => p.expenses) },
+        { id: 'net', label: t('Net cash flow'), kind: 'line', dash: 'dashed', values: points.map((p) => p.net) },
       ]}
     />
   )
@@ -125,14 +127,15 @@ export function DonutChart({
   maxSlices?: number
 }) {
   const colors = useChartColors()
+  const t = useT()
   const { reducedMotion } = usePrefs()
   const slices = useMemo(() => {
     const sorted = [...data].filter((d) => d.value > 0).sort((a, b) => b.value - a.value)
     const rest = sorted.slice(maxSlices)
-    return rest.length ? [...sorted.slice(0, maxSlices), { id: 'other', label: 'Other', value: rest.reduce((s, d) => s + d.value, 0) }] : sorted
-  }, [data, maxSlices])
+    return rest.length ? [...sorted.slice(0, maxSlices), { id: 'other', label: t('Other'), value: rest.reduce((s, d) => s + d.value, 0) }] : sorted
+  }, [data, maxSlices, t])
   const total = slices.reduce((s, d) => s + d.value, 0)
-  const options = useMemo(() => donutOptions({ data: slices, formatValue, centerLabel, label, total, colors, reducedMotion }), [slices, formatValue, centerLabel, label, total, colors, reducedMotion])
+  const options = useMemo(() => donutOptions({ data: slices, formatValue, centerLabel, label, total, colors, reducedMotion, t }), [slices, formatValue, centerLabel, label, total, colors, reducedMotion, t])
   return (
     <div className={styles.donutWrap}>
       <div className={styles.donut}>
@@ -158,8 +161,9 @@ export function DonutChart({
 
 export function HeatmapChart(props: HeatmapProps) {
   const colors = useChartColors()
+  const t = useT()
   const { reducedMotion } = usePrefs()
-  const options = useMemo(() => heatmapOptions({ ...props, colors, reducedMotion }), [props, colors, reducedMotion])
+  const options = useMemo(() => heatmapOptions({ ...props, colors, reducedMotion, t }), [props, colors, reducedMotion, t])
   return <HighchartsChart options={options} height={Math.max(240, 56 + props.yCategories.length * 40)} />
 }
 
@@ -196,8 +200,9 @@ export function Sparkline({ values, tone = 'accent' }: { values: number[]; tone?
 }
 
 export function DataTable({ caption, columns, rows }: { caption: string; columns: string[]; rows: string[][] }) {
+  const t = useT()
   return (
-    <div className={styles.tableWrap} tabIndex={0} role="region" aria-label={`${caption} (scrollable)`}>
+    <div className={styles.tableWrap} tabIndex={0} role="region" aria-label={t('{caption} (scrollable)', { caption })}>
       <table className={styles.table}>
         <caption className="sr-only">{caption}</caption>
         <thead>

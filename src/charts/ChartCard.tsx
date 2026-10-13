@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react'
 
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Collapsible } from '@/components/ui/Misc'
+import { useT } from '@/i18n/useT'
 import { DataTable } from './index'
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 
 /** Card wrapper that pairs every chart with a text summary and a data table alternative. */
 export function ChartCard({ title, description, summary, table, action, children }: Props) {
+  const t = useT()
   const [open, setOpen] = useState(false)
   return (
     <Card as="section" aria-label={title}>
@@ -24,7 +26,7 @@ export function ChartCard({ title, description, summary, table, action, children
       {summary && <p className="sr-only">{summary}</p>}
       {table && (
         <div style={{ marginTop: 'var(--space-3)' }}>
-          <Collapsible label={open ? 'Hide data table' : 'Show data table'} open={open} onToggle={setOpen}>
+          <Collapsible label={open ? t('Hide data table') : t('Show data table')} open={open} onToggle={setOpen}>
             <DataTable {...table} />
           </Collapsible>
         </div>
