@@ -12,9 +12,9 @@ Forma Analytics is an independently branded educational and portfolio project, n
 | --- | --- |
 | ![Analytics in the light theme](docs/screenshots/analytics-light.png) | ![Spending heatmap in the dark theme](docs/screenshots/heatmap-dark.png) |
 
-| Report (Norwegian) | Payslip import (Norwegian) |
+| Printable report | Payslip import |
 | --- | --- |
-| ![Printable report in Norwegian bokmål](docs/screenshots/report-nb.png) | ![Reviewing values read from a payslip PDF](docs/screenshots/payslip-nb.png) |
+| ![Printable report](docs/screenshots/report-en.png) | ![Reviewing values read from a payslip PDF](docs/screenshots/payslip-en.png) |
 
 | Dark | Halloween | Christmas | Mobile (Summer) |
 | --- | --- | --- | --- |
