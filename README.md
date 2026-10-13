@@ -12,6 +12,10 @@ Forma Analytics is an independently branded educational and portfolio project, n
 | --- | --- |
 | ![Analytics in the light theme](docs/screenshots/analytics-light.png) | ![Spending heatmap in the dark theme](docs/screenshots/heatmap-dark.png) |
 
+| Report (Norwegian) | Payslip import (Norwegian) |
+| --- | --- |
+| ![Printable report in Norwegian bokmål](docs/screenshots/report-nb.png) | ![Reviewing values read from a payslip PDF](docs/screenshots/payslip-nb.png) |
+
 | Dark | Halloween | Christmas | Mobile (Summer) |
 | --- | --- | --- | --- |
 | ![Overview in the dark theme](docs/screenshots/overview-dark.png) | ![Analytics in the Halloween theme](docs/screenshots/analytics-halloween.png) | ![Budgets in the Christmas theme](docs/screenshots/budgets-christmas.png) | ![Overview on a phone in the Summer theme](docs/screenshots/overview-mobile.png) |
@@ -23,7 +27,10 @@ Forma Analytics is an independently branded educational and portfolio project, n
 - **Budgets:** monthly category limits, remaining amounts, utilisation, overspend and near-limit indicators, a month switcher and a budget-versus-actual chart.
 - **Savings goals:** targets, saved amounts, optional dates with a required-per-month estimate, completion state and a progress chart.
 - **Analytics:** income versus expenses, spending trend, cumulative savings, category breakdown, a category-by-month spending heatmap, budget versus actual, goal progress and year-over-year comparison, filterable by date range and category. Every chart has a text summary and a data table.
-- **Settings:** theme, seasonal automation, motion preference, currency, locale, JSON backup and import, CSV export, demo data management and data deletion.
+- **Report and PDF:** a clean, printable financial summary (totals, months, categories, budgets, goals and, optionally, every transaction). Use *Print or save as PDF* in the browser. It states that it is compiled by you and not verified by a bank or authority, and flags fictional demo data. Nothing is uploaded.
+- **Payslip import:** pick a payslip as a PDF and the app reads its text locally, suggests net pay, gross pay, tax withheld, pay date and employer, and shows them for review before saving the net pay as income. The extracted values are also available as JSON.
+- **Languages:** English, Norwegian bokmål and Norwegian nynorsk. The language is chosen from the browser on first run and can be changed in Settings.
+- **Settings:** language, theme, seasonal automation, motion preference, currency, locale, JSON backup and import, CSV export, demo data management and data deletion.
 - **Demo mode:** realistic fictional data on first launch, clearly labelled and separate from your own records. Removing or resetting it never touches your data.
 
 ## Themes
@@ -36,7 +43,7 @@ Light (default), Dark, Summer, Christmas, Halloween and April Fools. All are sem
 
 ## Tech stack
 
-React 19, TypeScript (strict), Vite, React Router (hash routing for static hosting), CSS Modules and CSS custom properties, Lucide React, Motion for React (lazy-loaded), Highcharts (lazy-loaded, non-commercial licence), IndexedDB, Vitest, React Testing Library, Playwright with axe-core, ESLint and GitHub Actions. Font: Inter Variable, self-hosted as a Latin-subset WOFF2.
+React 19, TypeScript (strict), Vite, React Router (hash routing for static hosting), CSS Modules and CSS custom properties, Lucide React, Motion for React (lazy-loaded), Highcharts (lazy-loaded, non-commercial licence), pdf.js (lazy-loaded, only when a payslip is chosen), IndexedDB, Vitest, React Testing Library, Playwright with axe-core, ESLint and GitHub Actions. Font: Inter Variable, self-hosted as a Latin-subset WOFF2.
 
 There are no backend, analytics or third-party runtime services, and no state-management library.
 
@@ -61,7 +68,7 @@ npx playwright install chromium
 npm run test:e2e     # Playwright on desktop and mobile viewports, including axe checks
 ```
 
-The Playwright suite checks every route for console errors and horizontal overflow, runs axe (WCAG 2.2 AA rules) on every route in all six themes, exercises the add/reload persistence flow, theme switching, the mobile drawer, import/export, reduced motion and that no request leaves the origin.
+The Playwright suite (which also covers the translated interface, the report, print styles, PDF generation and the payslip import) checks every route for console errors and horizontal overflow, runs axe (WCAG 2.2 AA rules) on every route in all six themes, exercises the add/reload persistence flow, theme switching, the mobile drawer, import/export, reduced motion and that no request leaves the origin.
 
 ## Architecture
 
@@ -83,6 +90,14 @@ src/
 
 Presentation, state, persistence, calculations, charts and theming are kept in separate layers. Financial calculations are pure functions that do not depend on React or the chart layer.
 
+## Payslip import: what it can and cannot do
+
+- It reads the **text layer** of a PDF with pdf.js, in the browser. A scanned or photographed payslip has no text layer and is rejected with a message; there is no OCR.
+- It looks for common Norwegian and English labels (for example *Bruttolønn*, *Skattetrekk*, *Netto utbetalt*, *Utbetalingsdato*, *Gross pay*, *Net pay*) and takes the first amount after each. Layouts vary a lot between payroll systems, so the result is a **suggestion**: every value is shown and editable before anything is saved, and a similar existing income triggers a warning.
+- If no net amount is labelled but gross and tax are found, net is calculated as gross minus tax and marked as such.
+- Password-protected PDFs, files over 10 MB and only the first five pages are not read.
+- The PDF itself is not stored; only the transaction you confirm is saved. The e2e suite checks that importing makes no external request.
+
 ## Local data and privacy
 
 - Records are stored in **IndexedDB** (`forma-analytics`, schema version 1) with versioned migrations. Lightweight preferences use `localStorage`.
@@ -95,7 +110,7 @@ Presentation, state, persistence, calculations, charts and theming are kept in s
 
 ## Accessibility
 
-The target is WCAG 2.2 AA. This includes semantic landmarks and headings, a skip link, keyboard-operable controls with visible focus, native `<dialog>` modals with focus management, labelled form fields with associated error messages, live-region announcements, `prefers-reduced-motion` support plus an in-app setting, and charts that never rely on colour alone (marker shapes, dash styles, stripe patterns, direct values, the Highcharts accessibility module and data tables). Automated axe checks pass on all routes in all themes. Automated checks do not replace testing with real assistive technology, which has not been done yet.
+The target is WCAG 2.2 AA. This includes semantic landmarks and headings, a skip link, keyboard-operable controls with visible focus, native `<dialog>` modals with focus management, labelled form fields with associated error messages, live-region announcements, `prefers-reduced-motion` support plus an in-app setting, and charts that never rely on colour alone (marker shapes, dash styles, stripe patterns, direct values, the Highcharts accessibility module and data tables). The app text, chart descriptions and error messages are translated; the generic screen-reader phrases built into the Highcharts accessibility module remain in English. Automated axe checks pass on all routes in all themes. Automated checks do not replace testing with real assistive technology, which has not been done yet.
 
 ## Performance and Lighthouse
 
@@ -142,6 +157,6 @@ Current versions of Chrome, Edge, Firefox and Safari. The app relies on IndexedD
 
 Charts use Highcharts, loaded lazily behind a typed abstraction. Highcharts is free only for non-commercial use under the Highsoft EULA and needs a paid licence for commercial use. This project is a personal, non-commercial portfolio and is used on that basis. See [docs/CHARTING.md](docs/CHARTING.md) for details and how to swap the chart layer.
 
-Original project code is licensed under the [MIT License](LICENSE). It does not override the licences of third-party dependencies or assets, for example Inter (SIL Open Font License 1.1, see `public/fonts/Inter-OFL.txt`), React, Lucide, Motion and Highcharts, which keep their own licences. Highcharts is **not** covered by the MIT licence.
+Original project code is licensed under the [MIT License](LICENSE). It does not override the licences of third-party dependencies or assets, for example Inter (SIL Open Font License 1.1, see `public/fonts/Inter-OFL.txt`), React, Lucide, Motion, pdf.js (Apache-2.0) and Highcharts, which keep their own licences. Highcharts is **not** covered by the MIT licence.
 
 Copyright (c) 2026 Ole Mathias Hammer Brænde

@@ -118,11 +118,13 @@ function PayslipReview({ loaded, onClose, onSaved }: { loaded: Loaded; onClose: 
   }
 
   const row = (label: string, value: string | null, note?: string) => (
-    <li>
-      <span>{label}</span>
-      <strong className="num">{value ?? t('Not found')}</strong>
-      {note && <span> ({note})</span>}
-    </li>
+    <div className={styles.found}>
+      <dt>{label}</dt>
+      <dd>
+        <strong className="num" data-missing={value === null || undefined}>{value ?? t('Not found')}</strong>
+        {note && <span className={styles.foundNote}> ({note})</span>}
+      </dd>
+    </div>
   )
 
   return (
@@ -142,13 +144,13 @@ function PayslipReview({ loaded, onClose, onSaved }: { loaded: Loaded; onClose: 
           {t('The text is read automatically and payslip layouts differ, so the values are only a suggestion. Compare them with the PDF.')}
         </p>
         {nothingFound && <p className={styles.saveError} role="alert">{t('No payslip amounts were recognised. You can still enter the values by hand.')}</p>}
-        <ul style={{ margin: 0, paddingLeft: 'var(--space-5)', display: 'grid', gap: 'var(--space-1)' }} aria-label={t('Read from the PDF')}>
+        <dl className={styles.foundList} aria-label={t('Read from the PDF')}>
           {row(t('Net pay'), data.net !== null ? fmt.money(data.net) : null, data.netDerived ? t('calculated as gross minus tax') : undefined)}
           {row(t('Gross pay'), data.gross !== null ? fmt.money(data.gross) : null)}
           {row(t('Tax withheld'), data.tax !== null ? fmt.money(data.tax) : null)}
           {row(t('Pay date'), data.date ? fmt.date(data.date) : null)}
           {row(t('Employer'), data.employer)}
-        </ul>
+        </dl>
         <form id="payslip-form" onSubmit={submit} noValidate className={styles.form}>
           <TextField label={t('Amount to record as income')} inputMode="decimal" autoComplete="off" value={amount} onChange={(e) => setAmount(e.target.value)} error={errors.amount} hint={t('Net pay is what reaches your bank account.')} autoFocus />
           <div className={styles.row2}>
