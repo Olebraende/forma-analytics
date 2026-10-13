@@ -1,5 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 import 'fake-indexeddb/auto'
+import { configure } from '@testing-library/react'
+
+// The first render lazy-loads route chunks; slow CI runners need more than the 1s default.
+configure({ asyncUtilTimeout: 8000 })
 
 // jsdom lacks <dialog> modal support.
 HTMLDialogElement.prototype.showModal ??= function showModal(this: HTMLDialogElement) {
